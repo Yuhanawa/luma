@@ -1,74 +1,76 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { useCallback, useEffect, useState } from "react";
+import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import type { TopicCardItem } from "~/components/topicCard";
+import { TopicList } from "~/components/topicCardList";
+import { Text } from "~/components/ui/text";
+import { useLinuxDoClientStore } from "~/store/linuxDoClientStore";
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
-}
+	const client = useLinuxDoClientStore().client!;
+	const [topicItems, setTopicItems] = useState<TopicCardItem[] | undefined>(undefined);
+	const [page, setPage] = useState(0);
+	const [isLoading, setIsLoading] = useState(false);
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+	useEffect(() => {
+		handleRefresh();
+	}, []);
+
+	const handleRefresh = useCallback(async () => {
+		if (isLoading) return; // Prevent multiple simultaneous calls
+
+		try {
+			setIsLoading(true);
+			const topics = await client.listLatestTopics();
+			setTopicItems(topics.topic_list?.topics);
+			console.log(topics.topic_list?.topics);
+			setPage(1);
+		} catch (error) {
+			console.error("Error fetching topics:", error);
+		} finally {
+			setIsLoading(false);
+		}
+	}, [client, isLoading]);
+
+	const handleLoadMore = useCallback(async () => {
+		if (isLoading || page === 0) return; // Prevent loading if already loading or no initial data
+
+		try {
+			setIsLoading(true);
+			console.log("Loading more topics, page:", page + 1);
+
+			const topics = await client.listLatestTopicsEx({
+				no_definitions: true,
+				page: page + 1,
+			});
+
+			if (topics.topic_list?.topics?.length) {
+				setTopicItems((prev) => {
+					const existingIds = new Set(prev?.map((item) => item.id));
+					const newTopics = topics.topic_list?.topics?.filter((topic) => !existingIds.has(topic.id));
+					return [...(prev || []), ...(newTopics || [])];
+				});
+				setPage((prevPage) => prevPage + 1);
+			}
+		} catch (error) {
+			console.error("Error loading more topics:", error);
+		} finally {
+			setIsLoading(false);
+		}
+	}, [client, page, isLoading]);
+
+	return (
+		<SafeAreaView style={{ flex: 1 }}>
+			<View className="bg-primary mb-2 p-2">
+				<Text className="color-background font-bold self-center">LUMA</Text>
+			</View>
+			{topicItems ? (
+				<TopicList initialItems={topicItems} onRefresh={handleRefresh} onLoadMore={handleLoadMore} title="Forum Topics" />
+			) : (
+				<View className="flex-1 items-center justify-center">
+					<Text>Loading topics...</Text>
+				</View>
+			)}
+		</SafeAreaView>
+	);
+}

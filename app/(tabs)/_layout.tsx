@@ -1,45 +1,76 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
-
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { Tabs } from "expo-router";
+import { BedIcon, BugIcon, HomeIcon } from "lucide-react-native";
+import React, { useEffect, useState } from "react";
+import { Platform } from "react-native";
+import { Text } from "~/components/ui/text";
+import { useLinuxDoClientStore } from "~/store/linuxDoClientStore";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+	const [loading, setLoading] = useState(true);
+	const linuxDoClientState = useLinuxDoClientStore();
 
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
-  );
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only run once
+	useEffect(() => {
+		if (linuxDoClientState.client !== null) {
+			setLoading(false);
+		} else {
+			linuxDoClientState.init().then(() => {
+				setLoading(false);
+			});
+		}
+	}, []);
+
+	if (loading)
+		return (
+			<>
+				{Array.from({ length: 40 }).map((_, i) => (
+					<Text key={i as number}>Loading LinuxDoClient</Text>
+				))}
+			</>
+		);
+
+	return (
+		<Tabs
+			screenOptions={{
+				// tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+				headerShown: false,
+				// tabBarBackground: () => <BlurView tint="dark" intensity={100} style={{ flex: 1 }}/>,
+				tabBarStyle: Platform.select({
+					ios: {
+						// Use a transparent background on iOS to show the blur effect
+						position: "absolute",
+					},
+					default: {
+						// position: 'absolute',
+					},
+				}),
+			}}
+		>
+			<Tabs.Screen
+				name="index"
+				options={{
+					title: "Home",
+					// tabBarIconStyle: { display: 'none' },
+					tabBarIcon: ({ color }) => <HomeIcon color={color} />,
+				}}
+			/>
+			<Tabs.Screen
+				name="user"
+				options={{
+					title: "User",
+					tabBarIcon: ({ color }) => <BedIcon color={color} />,
+				}}
+			/>
+			{process.env.NODE_ENV === "development" && (
+				<Tabs.Screen
+					name="dev"
+					options={{
+						title: "Dev&Debug",
+						tabBarIcon: ({ color }) => <BugIcon color={color} />,
+						headerShown: true,
+					}}
+				/>
+			)}
+		</Tabs>
+	);
 }
