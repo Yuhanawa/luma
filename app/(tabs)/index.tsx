@@ -65,7 +65,15 @@ export default function HomeScreen() {
 				<Text className="color-background font-bold self-center">LUMA</Text>
 			</View>
 			{topicItems ? (
-				<TopicList initialItems={topicItems} onRefresh={handleRefresh} onLoadMore={handleLoadMore} title="Forum Topics" />
+				<TopicList 
+					initialItems={topicItems} 
+					onRefresh={handleRefresh} 
+					onLoadMore={handleLoadMore} 
+					title="Forum Topics"
+					onMarkAsRead={(id) => { /* TODO: Implement mark as read */ }}
+					onDelete={(id) => { /* TODO: Implement delete */ }}
+					onBookmark={(id) => { /* TODO: Implement bookmark */ }}
+				/>
 			) : (
 				<View className="flex-1 items-center justify-center">
 					<Text>Loading topics...</Text>

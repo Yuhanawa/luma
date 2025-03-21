@@ -11,6 +11,9 @@ type TopicListProps = {
 	onLoadMore?: () => Promise<void>;
 	emptyStateMessage?: string;
 	title?: string;
+	onMarkAsRead?: (id: number) => void;
+	onDelete?: (id: number) => void;
+	onBookmark?: (id: number) => void;
 };
 
 const AnimatedView = Animated.createAnimatedComponent(View);
@@ -21,6 +24,9 @@ export const TopicList = ({
 	onLoadMore,
 	emptyStateMessage = "No topics to display",
 	title = "Topics",
+	onMarkAsRead,
+	onDelete,
+	onBookmark,
 }: TopicListProps) => {
 	const { colorScheme } = useColorScheme();
 	const [items, setItems] = useState<TopicCardItem[]>(initialItems);
@@ -71,30 +77,14 @@ export const TopicList = ({
 		}
 	};
 
-	// TODO
-	const handleMarkAsRead = useCallback((id: number) => {
-		setItems((prevItems) =>
-			prevItems.map((item) => (item.id === id ? { ...item, unseen: !item.unseen, unread_posts: item.unseen ? 0 : 1 } : item)),
-		);
-	}, []);
-
-	// TODO
-	const handleDelete = useCallback((id: number) => {
-		setItems((prevItems) => prevItems.filter((item) => item.id !== id));
-	}, []);
-
-	// TODO
-	const handleBookmark = useCallback((id: number) => {
-		setItems((prevItems) => prevItems.map((item) => (item.id === id ? { ...item, bookmarked: !item.bookmarked } : item)));
-	}, []);
 
 	const renderItem = useCallback(
 		({ item, index }: { item: TopicCardItem; index: number }) => (
 			<AnimatedView entering={FadeInDown.delay(index * 50).springify()} exiting={FadeOutUp.springify()}>
-				<TopicCard item={item} onMarkAsRead={handleMarkAsRead} onDelete={handleDelete} onBookmark={handleBookmark} />
+				<TopicCard item={item} onMarkAsRead={onMarkAsRead} onDelete={onDelete} onBookmark={onBookmark} />
 			</AnimatedView>
 		),
-		[handleMarkAsRead, handleDelete, handleBookmark],
+		[onMarkAsRead, onDelete, onBookmark],
 	);
 
 	const renderFooter = () => {
