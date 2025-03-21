@@ -37,3 +37,4 @@ yarn-error.*
 
 app-example
 .env
+.aider*
