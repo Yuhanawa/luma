@@ -1,0 +1,15 @@
+tech: 
+
+- TypeScript
+- Expo
+- React Native
+- nativewind v4
+- React Native Reusables
+
+generated/answered:
+
+- Always use English in code and code comments
+- Use user's preferred language in answered
+- Do NOT repeat something twice
+
+When user asks to update this file, you MUST ask for confirmation before updating this file 
