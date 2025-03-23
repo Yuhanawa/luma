@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Cookie, CookieJar } from "tough-cookie";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -7,6 +8,7 @@ import { LINUXDO_CONST } from "~/constants/linuxDo";
 import { saveCookieJar } from "~/lib/cookieManager";
 
 export default function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
+	const { t } = useTranslation();
 	const [_t, set_t] = useState("");
 
 	const handlePress = useCallback(() => {
@@ -31,11 +33,11 @@ export default function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 
 	return (
 		<>
-			<Text>Login</Text>
-			<Text>输入 `_t` Cookie 进行登录喵</Text>
+			<Text>{t("login.title")}</Text>
+			<Text>{t("login.cookiePrompt")}</Text>
 			<Input value={_t} onChangeText={set_t} />
 			<Button onPress={handlePress}>
-				<Text>Confirm</Text>
+				<Text>{t("login.confirm")}</Text>
 			</Button>
 		</>
 	);

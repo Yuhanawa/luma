@@ -1,0 +1,21 @@
+{
+	"common": {
+		"loading": "Loading",
+		"failed": "Failed to load",
+		"confirm": "Confirm"
+	},
+	"login": {
+		"title": "Login",
+		"cookiePrompt": "Enter _t Cookie to login",
+		"confirm": "Confirm"
+	},
+	"tabs": {
+		"home": "Home",
+		"user": "User",
+		"dev": "Dev&Debug"
+	},
+	"home": {
+		"appName": "LUMA",
+		"loadingTopics": "Loading topics..."
+	}
+}

@@ -1,0 +1,21 @@
+{
+	"common": {
+		"loading": "加载中",
+		"failed": "加载失败",
+		"confirm": "确认"
+	},
+	"login": {
+		"title": "登录",
+		"cookiePrompt": "输入 _t Cookie 进行登录",
+		"confirm": "确认"
+	},
+	"tabs": {
+		"home": "首页",
+		"user": "用户",
+		"dev": "开发调试"
+	},
+	"home": {
+		"appName": "LUMA",
+		"loadingTopics": "正在加载主题..."
+	}
+}
