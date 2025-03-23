@@ -1,15 +1,17 @@
+import "../lib/i18n";
 import "../global.css";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
+import { I18nextProvider } from "react-i18next";
 import { useColorScheme } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ReanimatedLogLevel, configureReanimatedLogger } from "react-native-reanimated";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
+import { ImageViewerProvider } from "~/components/ui/image-viewer-context";
 import { Text } from "~/components/ui/text";
 import { checkCookie, loadCookieJar } from "~/lib/cookieManager";
+import i18n from "../lib/i18n";
 import LoginScreen from "./loginScreen";
 
 export default function RootLayout() {
@@ -46,7 +48,9 @@ export default function RootLayout() {
 	if (isLogin === false) {
 		return (
 			<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-				<LoginScreen onSuccess={() => setIsLogin(true)} />
+				<I18nextProvider i18n={i18n}>
+					<LoginScreen onSuccess={() => setIsLogin(true)} />
+				</I18nextProvider>
 			</ThemeProvider>
 		);
 	}
@@ -54,13 +58,17 @@ export default function RootLayout() {
 		return (
 			<>
 				<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-					<GestureHandlerRootView style={{ flex: 1 }}>
-						<Stack>
-							<Stack.Screen name="(tabs)" options={{ headerShown: false, headerTitle: "Luma" }} />
-							<Stack.Screen name="+not-found" />
-						</Stack>
-						<StatusBar style="auto" />
-					</GestureHandlerRootView>
+					<I18nextProvider i18n={i18n}>
+						<ImageViewerProvider>
+							<GestureHandlerRootView style={{ flex: 1 }}>
+								<Stack>
+									<Stack.Screen name="(tabs)" options={{ headerShown: false, headerTitle: "Luma" }} />
+									<Stack.Screen name="+not-found" />
+								</Stack>
+								<StatusBar style="auto" />
+							</GestureHandlerRootView>
+						</ImageViewerProvider>
+					</I18nextProvider>
 				</ThemeProvider>
 			</>
 		);
