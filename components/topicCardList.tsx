@@ -14,6 +14,8 @@ type TopicListProps = {
 	onMarkAsRead?: (id: number) => void;
 	onDelete?: (id: number) => void;
 	onBookmark?: (id: number) => void;
+	onPress?: (id: number) => void;
+	enableSwipe?: boolean;
 };
 
 const AnimatedView = Animated.createAnimatedComponent(View);
@@ -27,6 +29,8 @@ export const TopicList = ({
 	onMarkAsRead,
 	onDelete,
 	onBookmark,
+	onPress,
+	enableSwipe = true,
 }: TopicListProps) => {
 	const { colorScheme } = useColorScheme();
 	const [items, setItems] = useState<TopicCardItem[]>(initialItems);
@@ -77,14 +81,20 @@ export const TopicList = ({
 		}
 	};
 
-
 	const renderItem = useCallback(
 		({ item, index }: { item: TopicCardItem; index: number }) => (
 			<AnimatedView entering={FadeInDown.delay(index * 50).springify()} exiting={FadeOutUp.springify()}>
-				<TopicCard item={item} onMarkAsRead={onMarkAsRead} onDelete={onDelete} onBookmark={onBookmark} />
+				<TopicCard
+					item={item}
+					onMarkAsRead={onMarkAsRead}
+					onDelete={onDelete}
+					onBookmark={onBookmark}
+					onPress={onPress}
+					enableSwipe={enableSwipe}
+				/>
 			</AnimatedView>
 		),
-		[onMarkAsRead, onDelete, onBookmark],
+		[onMarkAsRead, onDelete, onBookmark, onPress, enableSwipe],
 	);
 
 	const renderFooter = () => {
@@ -157,7 +167,7 @@ export const TopicList = ({
 				onRefresh={onRefresh ? handleRefresh : undefined}
 				refreshing={refreshing}
 				onEndReached={handleLoadMore}
-				onEndReachedThreshold={0.2} // Lower threshold to prevent early triggers
+				onEndReachedThreshold={0.4}
 				onMomentumScrollBegin={() => {
 					onEndReachedCalledDuringMomentum.current = false;
 				}}
