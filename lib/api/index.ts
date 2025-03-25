@@ -235,6 +235,7 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 	protected eventEmitter: EventEmitter;
 	protected cookieJar: CookieJar;
 	private url: string;
+	protected username?: string;
 
 	/**
 	 * Creates a new Discourse API client.
@@ -285,6 +286,9 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 				}
 				if (response.data.csrf) {
 					this.axiosInstance.defaults.headers.common["X-CSRF-Token"] = response.data.csrf;
+				}
+				if (response.headers["x-discourse-username"]) {
+					this.username = response.headers["x-discourse-username"];
 				}
 				return response;
 			},
@@ -343,6 +347,10 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 	 */
 	private async emitCookieChanged() {
 		this.eventEmitter.emit("cookieChanged", await this.cookieJar.serialize());
+	}
+
+	getUsername(): string | undefined {
+		return this.username;
 	}
 
 	/**
