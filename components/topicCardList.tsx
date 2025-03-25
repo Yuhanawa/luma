@@ -1,14 +1,18 @@
+import { FlashList } from "@shopify/flash-list";
 import { BookmarkIcon, Filter, MessageSquare, RefreshCw, TrendingUp } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, Text, View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated";
+import { ErrorRetry } from "./ErrorRetry";
+import { TopicSkeleton } from "./TopicSkeleton";
 import { TopicCard, type TopicCardItem } from "./topicCard";
 
 type TopicListProps = {
 	initialItems?: TopicCardItem[];
 	onRefresh?: () => Promise<void>;
 	onLoadMore?: () => Promise<void>;
+	hasMore?: boolean | (() => boolean);
 	emptyStateMessage?: string;
 	title?: string;
 	onMarkAsRead?: (id: number) => void;
@@ -18,11 +22,10 @@ type TopicListProps = {
 	enableSwipe?: boolean;
 };
 
-const AnimatedView = Animated.createAnimatedComponent(View);
-
 export const TopicList = ({
 	initialItems = [],
 	onRefresh,
+	hasMore,
 	onLoadMore,
 	emptyStateMessage = "No topics to display",
 	title = "Topics",
@@ -37,7 +40,7 @@ export const TopicList = ({
 	const [refreshing, setRefreshing] = useState(false);
 	const [loadingMore, setLoadingMore] = useState(false);
 	const [filterType, setFilterType] = useState<"all" | "unread" | "bookmarked" | "trending">("all");
-	const listRef = useRef<FlatList>(null);
+	const listRef = useRef<FlashList<TopicCardItem>>(null);
 	const onEndReachedCalledDuringMomentum = useRef(false);
 
 	// Update items when initialItems change
@@ -47,12 +50,16 @@ export const TopicList = ({
 
 	const isDark = colorScheme === "dark";
 
-	const filteredItems = items.filter((item) => {
-		if (filterType === "unread") return item.unseen || (item.unread_posts && item.unread_posts > 0);
-		if (filterType === "bookmarked") return item.bookmarked;
-		if (filterType === "trending") return (item.views ?? 0) > 100 || (item.like_count ?? 0) > 10;
-		return true;
-	});
+	const filteredItems = useMemo(
+		() =>
+			items.filter((item) => {
+				if (filterType === "unread") return item.unseen || (item.unread_posts && item.unread_posts > 0);
+				if (filterType === "bookmarked") return item.bookmarked;
+				if (filterType === "trending") return (item.views ?? 0) > 100 || (item.like_count ?? 0) > 10;
+				return true;
+			}),
+		[items, filterType],
+	);
 
 	const handleRefresh = async () => {
 		if (onRefresh && !refreshing) {
@@ -61,6 +68,7 @@ export const TopicList = ({
 				await onRefresh();
 			} catch (error) {
 				console.error("Error refreshing:", error);
+				return <ErrorRetry onRetry={handleRefresh} />;
 			} finally {
 				setRefreshing(false);
 			}
@@ -68,7 +76,12 @@ export const TopicList = ({
 	};
 
 	const handleLoadMore = async () => {
-		if (onLoadMore && !loadingMore && !onEndReachedCalledDuringMomentum.current && items.length >= 10) {
+		if (
+			onLoadMore &&
+			!loadingMore &&
+			!onEndReachedCalledDuringMomentum.current &&
+			(hasMore === undefined || (typeof hasMore === "boolean" ? hasMore : hasMore()))
+		) {
 			onEndReachedCalledDuringMomentum.current = true;
 			setLoadingMore(true);
 			try {
@@ -82,8 +95,8 @@ export const TopicList = ({
 	};
 
 	const renderItem = useCallback(
-		({ item, index }: { item: TopicCardItem; index: number }) => (
-			<AnimatedView entering={FadeInDown.delay(index * 50).springify()} exiting={FadeOutUp.springify()}>
+		({ item }: { item: TopicCardItem }) => {
+			return (
 				<TopicCard
 					item={item}
 					onMarkAsRead={onMarkAsRead}
@@ -92,17 +105,18 @@ export const TopicList = ({
 					onPress={onPress}
 					enableSwipe={enableSwipe}
 				/>
-			</AnimatedView>
-		),
+			);
+		},
 		[onMarkAsRead, onDelete, onBookmark, onPress, enableSwipe],
 	);
 
 	const renderFooter = () => {
-		if (!loadingMore) return null;
+		if (onLoadMore === undefined || hasMore === undefined || typeof hasMore === "boolean" ? !hasMore : !hasMore()) return null;
 
 		return (
 			<View className="py-4 flex items-center justify-center">
-				<ActivityIndicator size="small" color="#3B82F6" />
+				<ActivityIndicator size="small" color={isDark ? "#E5E7EB" : "#6B7280"} />
+				<Text className={`text-center ${isDark ? "text-gray-400" : "text-gray-500"}`}>Loading more...</Text>
 			</View>
 		);
 	};
@@ -125,6 +139,10 @@ export const TopicList = ({
 				return <Filter size={16} color={isDark ? "#93C5FD" : "#3B82F6"} />;
 		}
 	};
+
+	if (!initialItems.length && refreshing) {
+		return <TopicSkeleton />;
+	}
 
 	return (
 		<View className="flex-1">
@@ -157,23 +175,31 @@ export const TopicList = ({
 				</View>
 			</View>
 
-			<FlatList
-				ref={listRef}
-				data={filteredItems}
-				renderItem={renderItem}
-				keyExtractor={(item) => item.id?.toString() || item.title || "UNKNOWN"}
-				contentContainerStyle={{ padding: 16 }}
-				showsVerticalScrollIndicator={false}
-				onRefresh={onRefresh ? handleRefresh : undefined}
-				refreshing={refreshing}
-				onEndReached={handleLoadMore}
-				onEndReachedThreshold={0.4}
-				onMomentumScrollBegin={() => {
-					onEndReachedCalledDuringMomentum.current = false;
-				}}
-				ListFooterComponent={renderFooter}
-				ListEmptyComponent={renderEmpty}
-			/>
+			<Animated.View entering={FadeInDown.duration(400)} exiting={FadeOutUp} className="flex-1">
+				<FlashList
+					ref={listRef}
+					data={filteredItems}
+					renderItem={renderItem}
+					keyExtractor={(item) => item.id?.toString() || item.slug || item.title || "MISSING_KEY"}
+					contentContainerStyle={{ padding: 16 }}
+					showsVerticalScrollIndicator={false}
+					onRefresh={onRefresh ? handleRefresh : undefined}
+					refreshing={refreshing}
+					onEndReached={handleLoadMore}
+					onEndReachedThreshold={0.5}
+					onMomentumScrollBegin={() => {
+						onEndReachedCalledDuringMomentum.current = false;
+					}}
+					ListFooterComponent={renderFooter}
+					ListEmptyComponent={renderEmpty}
+					removeClippedSubviews={true}
+					estimatedItemSize={150}
+					maintainVisibleContentPosition={{
+						minIndexForVisible: 0,
+						autoscrollToTopThreshold: 10,
+					}}
+				/>
+			</Animated.View>
 		</View>
 	);
 };
