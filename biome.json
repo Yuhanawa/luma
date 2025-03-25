@@ -7,7 +7,7 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"ignore": ["./lib/gen/**", "./components/ui/**", "./app-example/**", "./android/**"]
+		"ignore": ["./lib/gen/**", "./components/ui/**", "./app-example/**", "./android/**", "./ios/**", "./lib/docs/**"]
 	},
 	"formatter": {
 		"enabled": true,
