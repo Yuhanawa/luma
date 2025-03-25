@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { BedIcon, BugIcon, HomeIcon } from "lucide-react-native";
+import { BedIcon, HomeIcon, Menu } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { Text } from "~/components/ui/text";
@@ -55,22 +55,19 @@ export default function TabLayout() {
 				}}
 			/>
 			<Tabs.Screen
+				name="navigation"
+				options={{
+					title: "Navigation",
+					tabBarIcon: ({ color }) => <Menu color={color} />,
+				}}
+			/>
+			<Tabs.Screen
 				name="user"
 				options={{
 					title: "User",
 					tabBarIcon: ({ color }) => <BedIcon color={color} />,
 				}}
 			/>
-			{process.env.NODE_ENV === "development" && (
-				<Tabs.Screen
-					name="dev"
-					options={{
-						title: "Dev&Debug",
-						tabBarIcon: ({ color }) => <BugIcon color={color} />,
-						headerShown: true,
-					}}
-				/>
-			)}
 		</Tabs>
 	);
 }
