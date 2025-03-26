@@ -244,11 +244,10 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 	 * @param opts.initialCookie - An optional initial cookie string to load.
 	 */
 	constructor(url: string, opts: { initialCookie?: string | SerializedCookieJar | CookieJar } = {}) {
-		console.log("Creating DiscourseAPI instance: ", url, opts);
+		console.log("Creating DiscourseAPI instance: ", url);
 		super();
 
 		this.url = url;
-		// this.url = "https://example.com";
 		this.eventEmitter = new EventEmitter();
 		this.cookieJar = new CookieJar();
 
@@ -273,8 +272,39 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 		}
 
 		this.axiosInstance.interceptors.request.use((config) => {
-			console.log("config", config);
-			config.headers["X-CSRF-Token"] = this.axiosInstance.defaults.headers.common["X-CSRF-Token"];
+			if (this.axiosInstance.defaults.headers.common["X-CSRF-Token"] === null) {
+				this.axiosInstance.defaults.headers.common["X-CSRF-Token"] === undefined;
+				config.headers["X-CSRF-Token"] = undefined;
+				this.get_session_csrf();
+			}
+
+			if (this.axiosInstance.defaults.headers.common["X-CSRF-Token"]) {
+				config.headers["X-CSRF-Token"] = this.axiosInstance.defaults.headers.common["X-CSRF-Token"];
+			}
+
+			if (this.username) {
+				config.headers["Discourse-Logged-In"] = "true";
+			}
+
+			// TODO: 暂时还不知道 _trackView 的机制，等UI部分写好再看看
+			let _trackView = undefined;
+			let _topicId = undefined;
+
+			if (_trackView && (!config.method || config.method === "GET" || config.method === "GET")) {
+				_trackView = false;
+				config.headers["Discourse-Track-View"] = "true";
+				if (_topicId) {
+					config.headers["Discourse-Track-View-Topic-Id"] = _topicId;
+				}
+				_topicId = null;
+			}
+
+			const userPresent = () => false;
+			if (userPresent()) {
+				config.headers["Discourse-Present"] = "true";
+			}
+
+			console.log("Request:", config.url);
 			return config;
 		});
 		this.axiosInstance.interceptors.response.use(
@@ -290,15 +320,53 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 				if (response.headers["x-discourse-username"]) {
 					this.username = response.headers["x-discourse-username"];
 				}
+
+				console.log("Response:", response.config.url, response.status);
 				return response;
 			},
 			(error) => {
-				if (error.response && (error.response.status === 301 || error.response.status === 302) && error.response.headers.location) {
-					const redirectUrl = error.response.headers.location;
-					console.log("Following redirect to:", redirectUrl);
-					return this.axiosInstance.get(redirectUrl);
+				// note: for bad CSRF we don't loop an extra request right away.
+				//  this allows us to eliminate the possibility of having a loop.
+				if (error.response.status === 403 && error.response.data === '["BAD CSRF"]') {
+					this.axiosInstance.defaults.headers.common["X-CSRF-Token"] = null;
 				}
-				return Promise.reject(error);
+
+				// Handle HTTP errors using instanceof check
+				if (error instanceof HTTPError) {
+					console.error("HTTPError:", error.status, error.message);
+					throw new HTTPError(
+						error.status,
+						`Authentication failed (status ${error.status}): ${error.message}`, // Include the response text.
+						error.response,
+					);
+				}
+				// Handle Axios-specific errors.
+				if (axios.isAxiosError(error)) {
+					if (error.response) {
+						// The request was made and the server responded with a status code outside of the 2xx range.
+						console.error("Request failed:", error.response.status, error.response.statusText);
+						console.error("Response data:", error.response.data);
+						// Create and throw a custom HTTPError with the response data.
+						throw new HTTPError(
+							error.response.status,
+							`Request failed (status ${error.response.status}): ${JSON.stringify(error.response.data)}`, // Include the response text.
+							error.response,
+						);
+					}
+					if (error.request) {
+						// The request was made, but no response was received.
+						console.error("No response received:", error.request);
+					} else {
+						// Something else happened while setting up the request.
+						console.error("Error setting up the request:", error.message);
+					}
+					console.error(error.stack); // Log the full error stack for debugging.
+					throw error; // Re-throw the error for higher-level handling (if necessary).
+				}
+
+				// Handle non-Axios errors
+				console.error("An unexpected error occurred:", error);
+				throw error;
 			},
 		);
 	}
@@ -458,9 +526,6 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 			header["Content-Type"] = contentType;
 		}
 
-		// Add Discourse-specific headers (these might need adjustment based on the specific API endpoint).
-		// header["Discourse-Logged-In"] = "true";
-
 		// Construct the URL, replacing path parameters with their actual values.
 		const url = operation.path.replace(/\{([^}]+)\}/g, (_, p) => path[p] || `{${p}}`);
 
@@ -473,53 +538,18 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 			data: formData || (Object.keys(body).length > 0 ? body : undefined), // Request body (Axios handles FormData and JSON).
 		};
 
-		console.log("Request:", requestConfig.method, requestConfig.url, requestConfig);
-
 		// Execute the request using the Axios instance.
-		try {
-			const response = await this.axiosInstance(requestConfig);
-			console.log("Response:", response.status, response.headers);
-			return response.data; // Return the response data.
-		} catch (error) {
-			// Handle HTTP errors using instanceof check
-			if (error instanceof HTTPError) {
-				console.error("HTTPError:", error.status, error.message);
-				throw new HTTPError(
-					error.status,
-					`Authentication failed (status ${error.status}): ${error.message}`, // Include the response text.
-					error.response,
-				);
-			}
-			// Handle Axios-specific errors.
-			if (axios.isAxiosError(error)) {
-				if (error.response) {
-					// The request was made and the server responded with a status code outside of the 2xx range.
-					console.error("Request failed:", error.response.status, error.response.statusText);
-					console.error("Response data:", error.response.data);
-					// Create and throw a custom HTTPError with the response data.
-					throw new HTTPError(
-						error.response.status,
-						`Request failed (status ${error.response.status}): ${JSON.stringify(error.response.data)}`, // Include the response text.
-						error.response,
-					);
-				}
-				if (error.request) {
-					// The request was made, but no response was received.
-					console.error("No response received:", error.request);
-				} else {
-					// Something else happened while setting up the request.
-					console.error("Error setting up the request:", error.message);
-				}
-				console.error(error.stack); // Log the full error stack for debugging.
-				throw error; // Re-throw the error for higher-level handling (if necessary).
-			}
-			// Handle non-Axios errors
-			console.error("An unexpected error occurred:", error);
-			throw error;
-		}
+		// Error has been handled in this.axiosInstance.interceptors.response.use
+		const response = await this.axiosInstance(requestConfig);
+		return response.data;
 	}
 
-	async load_session_csrf() {
+	/**
+	 * Get the CSRF token from "/session/csrf"
+	 * axiosInstance will auto set the CSRF token to the header.
+	 * @returns The CSRF token.
+	 */
+	async get_session_csrf() {
 		const response = await this.axiosInstance.get("/session/csrf");
 		return response.data;
 	}
@@ -642,7 +672,6 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 			timezone,
 		});
 
-		console.log(response);
 		return response.data;
 	}
 }
