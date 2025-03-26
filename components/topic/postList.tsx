@@ -2,7 +2,7 @@ import { FlashList } from "@shopify/flash-list";
 import { type ComponentType, type JSXElementConstructor, type ReactElement, useCallback } from "react";
 import { View } from "react-native";
 import type { GetTopic200PostStreamPostsItem } from "~/lib/gen/api/discourseAPI/schemas/getTopic200PostStreamPostsItem";
-import { PostItem } from "./postItem";
+import { PostItem } from "./PostItem";
 
 type PostListProps = {
 	posts: GetTopic200PostStreamPostsItem[];

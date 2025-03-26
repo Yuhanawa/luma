@@ -3,8 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SceneMap, TabBar, TabView } from "react-native-tab-view";
-import type { TopicCardItem } from "~/components/topicCard";
-import { TopicList } from "~/components/topicCardList";
+import type { TopicCardItem } from "~/components/topic/TopicCard";
+import { TopicList } from "~/components/topic/TopicList";
 import { Text } from "~/components/ui/text";
 import { useLinuxDoClientStore } from "~/store/linuxDoClientStore";
 

@@ -1,13 +1,12 @@
 import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { IdCard, Info, Settings } from "lucide-react-native";
 import { View } from "react-native";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
+import { IdCard, Info, Settings } from "~/lib/icons";
 
 export function UserHeader() {
 	const router = useRouter();
-	const { colors } = useTheme();
 
 	return (
 		<View className="flex-row items-center justify-between px-1 mb-4">
@@ -19,7 +18,7 @@ export function UserHeader() {
 					size="icon"
 					// onPress={() => router.push("/help")}
 				>
-					<Info size={22} color={colors.text} />
+					<Info size={22} className="text-muted-foreground" />
 				</Button>
 
 				<Button
@@ -30,7 +29,7 @@ export function UserHeader() {
 					}}
 				>
 					{/* IDCard icon is visually smaller, so use a larger size. */}
-					<IdCard size={24} color={colors.text} />
+					<IdCard size={24} className="text-muted-foreground" />
 				</Button>
 
 				<Button
@@ -38,7 +37,7 @@ export function UserHeader() {
 					size="icon"
 					// onPress={() => router.push("/settings")}
 				>
-					<Settings size={22} color={colors.text} />
+					<Settings size={22} className="text-muted-foreground" />
 				</Button>
 			</View>
 		</View>

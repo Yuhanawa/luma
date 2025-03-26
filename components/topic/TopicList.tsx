@@ -4,9 +4,9 @@ import { useColorScheme } from "nativewind";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated";
-import { ErrorRetry } from "./ErrorRetry";
-import { TopicSkeleton } from "./TopicSkeleton";
-import { TopicCard, type TopicCardItem } from "./topicCard";
+import { ErrorRetry } from "../ErrorRetry";
+import { TopicSkeleton } from "../TopicSkeleton";
+import { TopicCard, type TopicCardItem } from "./TopicCard";
 
 type TopicListProps = {
 	initialItems?: TopicCardItem[];

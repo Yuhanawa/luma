@@ -7,7 +7,7 @@ import { Alert, Animated, Pressable, View } from "react-native";
 import { GestureHandlerRootView, type Swipeable } from "react-native-gesture-handler";
 import { Text } from "~/components/ui/text";
 import type { paths } from "~/lib/api/schema";
-import { SwipeableWrapper } from "./SwipeableWrapper";
+import { SwipeableWrapper } from "../SwipeableWrapper";
 
 export type TopicCardItem = NonNullable<
 	NonNullable<paths["/latest.json"]["get"]["responses"]["200"]["content"]["application/json"]["topic_list"]>["topics"]

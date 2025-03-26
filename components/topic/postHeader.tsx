@@ -1,8 +1,8 @@
 import { formatDistanceToNow } from "date-fns";
 import { useColorScheme } from "nativewind";
 import { View } from "react-native";
+import { UserAvatar } from "~/components/UserAvatar";
 import { Text } from "~/components/ui/text";
-import { UserAvatar } from "~/components/user-avatar";
 
 interface PostHeaderProps {
 	username: string;

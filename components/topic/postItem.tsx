@@ -1,9 +1,9 @@
 import { useColorScheme } from "nativewind";
 import { View } from "react-native";
 import type { GetTopic200PostStreamPostsItem } from "~/lib/gen/api/discourseAPI/schemas/getTopic200PostStreamPostsItem";
-import { PostActions } from "./postActions";
-import { PostContent } from "./postContent";
-import { PostHeader } from "./postHeader";
+import { PostActions } from "./PostActions";
+import { PostContent } from "./PostContent";
+import { PostHeader } from "./PostHeader";
 
 interface PostItemProps {
 	post: GetTopic200PostStreamPostsItem;

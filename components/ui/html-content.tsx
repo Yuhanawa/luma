@@ -31,7 +31,7 @@ import Svg, {
   Text as SVGText,
 } from "react-native-svg";
 import { useMemo, memo, useEffect } from "react";
-import { useImageViewer } from "./image-viewer-context";
+import { useImageViewer } from "../provider/ImageViewerProvider";
 
 export interface HTMLContentProps extends Partial<RenderHTMLProps> {
   html: string;

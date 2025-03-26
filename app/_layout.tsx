@@ -8,7 +8,7 @@ import { I18nextProvider } from "react-i18next";
 import { useColorScheme } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ReanimatedLogLevel, configureReanimatedLogger } from "react-native-reanimated";
-import { ImageViewerProvider } from "~/components/ui/image-viewer-context";
+import { ImageViewerProvider } from "~/components/provider/ImageViewerProvider";
 import { Text } from "~/components/ui/text";
 import { checkCookie, loadCookieJar } from "~/lib/cookieManager";
 import i18n from "../lib/i18n";
