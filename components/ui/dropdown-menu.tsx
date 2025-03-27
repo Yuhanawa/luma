@@ -10,10 +10,10 @@ import {
 	type ViewStyle,
 } from "react-native";
 import { TextClassContext } from "~/components/ui/text";
-import { Check } from "~/lib/icons/Check";
-import { ChevronDown } from "~/lib/icons/ChevronDown";
-import { ChevronRight } from "~/lib/icons/ChevronRight";
-import { ChevronUp } from "~/lib/icons/ChevronUp";
+import { Check } from "lucide-react-native";
+import { ChevronDown } from "lucide-react-native";
+import { ChevronRight } from "lucide-react-native";
+import { ChevronUp } from "lucide-react-native";
 import { cn } from "~/lib/utils";
 
 const DropdownMenu = DropdownMenuPrimitive.Root;

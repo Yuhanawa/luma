@@ -395,7 +395,10 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 		} catch (deserializeError) {
 			console.error("Error deserializing cookie jar:", deserializeError);
 		} finally {
-			console.log("Loaded cookies:", this.cookieJar.serializeSync()); // Use serializeSync for immediate result
+			console.log(
+				"Loaded cookies:",
+				this.cookieJar.serializeSync()?.cookies.map((c) => c.key),
+			);
 			this.emitCookieChanged();
 		}
 	}

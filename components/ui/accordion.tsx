@@ -13,7 +13,7 @@ import Animated, {
 	withTiming,
 } from "react-native-reanimated";
 import { TextClassContext } from "~/components/ui/text";
-import { ChevronDown } from "~/lib/icons/ChevronDown";
+import { ChevronDown } from "lucide-react-native";
 import { cn } from "~/lib/utils";
 
 const Accordion = React.forwardRef<

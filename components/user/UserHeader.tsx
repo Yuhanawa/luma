@@ -1,9 +1,9 @@
 import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
+import { IdCard, Info, Settings } from "lucide-react-native";
 import { View } from "react-native";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import { IdCard, Info, Settings } from "~/lib/icons";
 
 export function UserHeader() {
 	const router = useRouter();

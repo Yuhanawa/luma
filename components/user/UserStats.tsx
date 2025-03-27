@@ -1,7 +1,7 @@
+import { ChevronRight } from "lucide-react-native";
 import { Pressable, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { Text } from "~/components/ui/text";
-import { ChevronRight } from "~/lib/icons/ChevronRight";
 
 interface StatItemProps {
 	value: number;
