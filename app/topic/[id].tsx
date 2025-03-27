@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { PostList } from "~/components/topic/PostList";
 import { TopicHeader } from "~/components/topic/TopicHeader";
 import { TopicNavBar } from "~/components/topic/TopicNavBar";
-import { Text } from "~/components/ui/text";
+import { TopicDetailSkeleton } from "~/components/topic/TopicSkeleton";
 import type { GetTopic200 } from "~/lib/gen/api/discourseAPI/schemas/getTopic200";
 import type { GetTopic200PostStreamPostsItem } from "~/lib/gen/api/discourseAPI/schemas/getTopic200PostStreamPostsItem";
 import { useLinuxDoClientStore } from "~/store/linuxDoClientStore";
@@ -58,29 +58,29 @@ export default function TopicScreen() {
 		}
 	}, [topic]);
 
-	if (!topic) {
+	if (!topic || isLoading) {
 		return (
-			<View className="flex-1 items-center justify-center">
-				<Text>Loading...</Text>
-			</View>
+			<>
+				<Stack.Screen options={{ headerShown: false }} />
+				<SafeAreaView className="flex-1">
+					<TopicDetailSkeleton />
+				</SafeAreaView>
+			</>
 		);
 	}
 
 	return (
 		<>
-			<Stack.Screen options={{ headerShown: false }} />
-			<SafeAreaView className="flex-1">
-				<TopicNavBar topic={topic} onShare={handleShare} />
-				<PostList
-					ListHeaderComponent={<TopicHeader topic={topic} />}
-					posts={topic.post_stream.posts}
-					onReply={handleReply}
-					onLike={handleLike}
-					onMore={handleMore}
-					onRefresh={loadTopic}
-					isLoading={isLoading}
-				/>
-			</SafeAreaView>
+			<TopicNavBar topic={topic} onShare={handleShare} />
+			<PostList
+				ListHeaderComponent={<TopicHeader topic={topic} />}
+				posts={topic.post_stream.posts}
+				onReply={handleReply}
+				onLike={handleLike}
+				onMore={handleMore}
+				onRefresh={loadTopic}
+				isLoading={isLoading}
+			/>
 		</>
 	);
 }

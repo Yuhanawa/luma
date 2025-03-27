@@ -55,25 +55,23 @@ export default function UserScreen() {
 	}, []);
 
 	return (
-		<SafeAreaView className="flex-1 bg-background">
-			<View className="flex-1">
-				<View className="p-4">
-					<UserHeader />
-					<View className="flex-row gap-4">
-						<UserAvatar />
-						<UserInfo username="John Doe" userId="johndoe123" level={1} bio="Here is bio,\nit may need two lines" />
-					</View>
-					<UserStats />
+		<View className="flex-1">
+			<View className="p-4">
+				<UserHeader />
+				<View className="flex-row gap-4">
+					<UserAvatar />
+					<UserInfo username="John Doe" userId="johndoe123" level={1} bio="Here is bio,\nit may need two lines" />
 				</View>
-
-				<NotificationList
-					notifications={notifications}
-					onNotificationPress={handleNotificationPress}
-					onMarkAsRead={handleMarkAsRead}
-					onRefresh={handleRefresh}
-					isRefreshing={isRefreshing}
-				/>
+				<UserStats />
 			</View>
-		</SafeAreaView>
+
+			<NotificationList
+				notifications={notifications}
+				onNotificationPress={handleNotificationPress}
+				onMarkAsRead={handleMarkAsRead}
+				onRefresh={handleRefresh}
+				isRefreshing={isRefreshing}
+			/>
+		</View>
 	);
 }
