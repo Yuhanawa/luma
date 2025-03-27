@@ -1,7 +1,8 @@
 import { Tabs } from "expo-router";
 import { BedIcon, HomeIcon, Menu } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { Platform } from "react-native";
+import { Platform, View } from "react-native";
+import Animated, { FadeIn, FadeInRight } from "react-native-reanimated";
 import { Text } from "~/components/ui/text";
 import { useLinuxDoClientStore } from "~/store/linuxDoClientStore";
 
@@ -22,11 +23,19 @@ export default function TabLayout() {
 
 	if (loading)
 		return (
-			<>
-				{Array.from({ length: 40 }).map((_, i) => (
-					<Text key={i as number}>Loading LinuxDoClient</Text>
+			<View className="flex-1 bg-cyan-400/20">
+				{Array.from({ length: 30 }).map((_, i) => (
+					<Animated.View
+						className="text-foreground text-nowrap flex-nowrap flex-1"
+						entering={FadeIn.duration(i * 20).delay(i * 20)}
+						key={i as number}
+					>
+						<Animated.Text className="text-foreground text-nowrap flex-nowrap flex-1" entering={FadeInRight.duration(i * 25).delay(i * 25)}>
+							{Array.from({ length: 30 }).map(() => "Loading LinuxDoClient...")}
+						</Animated.Text>
+					</Animated.View>
 				))}
-			</>
+			</View>
 		);
 
 	return (
