@@ -14,7 +14,7 @@ export default class LinuxDoClient extends DiscourseAPI {
 		return client;
 	}
 
-	getLoadMoreTopicsUrl(result: ListLatestTopics200 & { topic_list?: { more_topics_url?: string } }): string | null {
+	getLoadMoreTopicsUrl(result: (ListLatestTopics200 & { topic_list?: { more_topics_url?: string } }) | undefined): string | null {
 		return result?.topic_list?.more_topics_url ?? null;
 	}
 
