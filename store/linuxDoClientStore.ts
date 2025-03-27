@@ -17,13 +17,11 @@ export const useLinuxDoClientStore = create<LinuxDoClientState>()(
 			init: async () => {
 				if (get().client !== null) return get().client!;
 				const client = await LinuxDoClient.create();
-				console.log("1");
 				try {
 					await client.get_session_csrf();
 				} catch (e) {
 					console.error("ERROR: When load_session_csrf", e);
 				}
-				console.log("2");
 				set({ client: client });
 				return client;
 			},
