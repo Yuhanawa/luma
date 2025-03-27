@@ -1,26 +1,31 @@
 import "../lib/i18n";
 import "../global.css";
-import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { I18nextProvider } from "react-i18next";
-import { useColorScheme } from "react-native";
+import { Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { ReanimatedLogLevel, configureReanimatedLogger } from "react-native-reanimated";
-import { ImageViewerProvider } from "~/components/provider/ImageViewerProvider";
-import { Text } from "~/components/ui/text";
+import Animated, { FadeIn, FadeInRight, ReanimatedLogLevel, configureReanimatedLogger } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ImageViewerProvider } from "~/components/providers/ImageViewerProvider";
+import { ThemeProvider, useTheme } from "~/components/providers/ThemeProvider";
 import { checkCookie, loadCookieJar } from "~/lib/cookieManager";
+import { initIconWithClassName } from "~/lib/icons";
 import i18n from "../lib/i18n";
 import LoginScreen from "./loginScreen";
 
-export default function RootLayout() {
-	const colorScheme = useColorScheme();
+function init() {
+	configureReanimatedLogger({
+		level: ReanimatedLogLevel.warn,
+		strict: false,
+	});
 
+	initIconWithClassName();
+}
+
+export default function RootLayout() {
 	const [loading, setLoading] = useState(true);
 	const [isLogin, setIsLogin] = useState<boolean | undefined>(undefined);
-
-	console.log(`loading: ${loading}, isLogin: ${isLogin}`);
 
 	useEffect(() => {
 		loadCookieJar().then((cookieJar) => {
@@ -29,55 +34,69 @@ export default function RootLayout() {
 				setLoading(false);
 			});
 		});
-
-		configureReanimatedLogger({
-			level: ReanimatedLogLevel.warn,
-			strict: false, // disable strict mode, because react-native-gesture-handler/ReanimatedSwipeable will output a lot of warning
-		});
 	}, []);
+
+	useEffect(init, []);
 
 	if (loading) {
 		return (
-			<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-				{Array.from({ length: 20 }).map((_, i) => (
-					<Text key={i as number}>Loading</Text>
-				))}
+			<ThemeProvider>
+				<SimpleText>Loading... </SimpleText>
 			</ThemeProvider>
 		);
 	}
 	if (isLogin === false) {
 		return (
-			<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-				<I18nextProvider i18n={i18n}>
-					<LoginScreen onSuccess={() => setIsLogin(true)} />
-				</I18nextProvider>
-			</ThemeProvider>
+			<Providers>
+				<LoginScreen onSuccess={() => setIsLogin(true)} />
+			</Providers>
 		);
 	}
 	if (isLogin === true) {
 		return (
-			<>
-				<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-					<I18nextProvider i18n={i18n}>
-						<ImageViewerProvider>
-							<GestureHandlerRootView style={{ flex: 1 }}>
-								<Stack>
-									<Stack.Screen name="(tabs)" options={{ headerShown: false, headerTitle: "Luma" }} />
-									<Stack.Screen name="+not-found" />
-								</Stack>
-								<StatusBar style="auto" />
-							</GestureHandlerRootView>
-						</ImageViewerProvider>
-					</I18nextProvider>
-				</ThemeProvider>
-			</>
+			<Providers>
+				<Stack>
+					<Stack.Screen name="(tabs)" options={{ headerShown: false, headerTitle: "Luma" }} />
+					<Stack.Screen name="+not-found" />
+				</Stack>
+			</Providers>
 		);
 	}
 	return (
-		<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-			{Array.from({ length: 20 }).map((_, i) => (
-				<Text key={i as number}>Failed to load</Text>
-			))}
+		<ThemeProvider>
+			<SimpleText>Failed to Load </SimpleText>
 		</ThemeProvider>
+	);
+}
+
+function Providers({ children }: { children: React.ReactNode }) {
+	return (
+		<ThemeProvider>
+			<I18nextProvider i18n={i18n}>
+				<SafeAreaView style={{ flex: 1 }}>
+					<ImageViewerProvider>
+						<GestureHandlerRootView style={{ flex: 1 }}>{children}</GestureHandlerRootView>
+					</ImageViewerProvider>
+				</SafeAreaView>
+			</I18nextProvider>
+		</ThemeProvider>
+	);
+}
+
+function SimpleText({ children }: { children: React.ReactNode }) {
+	return (
+		<View className="flex-1 bg-cyan-900">
+			{Array.from({ length: 30 }).map((_, i) => (
+				<Animated.View
+					className="text-foreground text-nowrap flex-nowrap flex-1"
+					entering={FadeIn.duration(i * 50).delay(i * 50)}
+					key={i as number}
+				>
+					<Animated.Text className="text-foreground text-nowrap flex-nowrap flex-1" entering={FadeInRight.duration(i * 100).delay(i * 100)}>
+						{Array.from({ length: 30 }).map(() => children)}
+					</Animated.Text>
+				</Animated.View>
+			))}
+		</View>
 	);
 }
