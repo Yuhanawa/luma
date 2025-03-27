@@ -15,7 +15,7 @@ interface CategorySectionProps {
 	delay?: number;
 }
 
-export function CategorySection({ title, items, onItemPress, onViewMore, delay = 0 }: CategorySectionProps) {
+export function NavigationSection({ title, items, onItemPress, onViewMore, delay = 0 }: CategorySectionProps) {
 	return (
 		<Animated.View entering={FadeIn.delay(delay)} className="mb-4 mx-4 p-4 bg-muted/50 rounded-lg">
 			<View className="flex-row items-center justify-between mb-3">

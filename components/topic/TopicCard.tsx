@@ -1,7 +1,6 @@
 import { formatDistanceToNow } from "date-fns";
 import { Image } from "expo-image";
 import { Check, Clock, Eye, MessageCircle, Star, Trash2 } from "lucide-react-native";
-import { useColorScheme } from "nativewind";
 import { useRef, useState } from "react";
 import { Alert, Animated, Pressable, View } from "react-native";
 import { GestureHandlerRootView, type Swipeable } from "react-native-gesture-handler";
@@ -123,7 +122,8 @@ export const TopicCard = ({ item, onMarkAsRead, onDelete, onBookmark, onPress, e
 	};
 
 	// Check for undefined values that might be causing issues
-	const title = item.fancy_title || item.title || "";
+	// biome-ignore lint/suspicious/noExplicitAny: TODO
+	const title = (item as any).unicode_title || item.fancy_title || item.title || "";
 	const postsCount = item.posts_count || 0;
 	const views = item.views || 0;
 	const likeCount = item.like_count || 0;

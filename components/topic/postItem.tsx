@@ -1,4 +1,3 @@
-import { useColorScheme } from "nativewind";
 import { View } from "react-native";
 import type { GetTopic200PostStreamPostsItem } from "~/lib/gen/api/discourseAPI/schemas/getTopic200PostStreamPostsItem";
 import { PostActions } from "./PostActions";
@@ -13,11 +12,8 @@ interface PostItemProps {
 }
 
 export const PostItem = ({ post, onReply, onLike, onMore }: PostItemProps) => {
-	const { colorScheme } = useColorScheme();
-	const isDark = colorScheme === "dark";
-
 	return (
-		<View className={`p-4 mb-2 ${isDark ? "bg-gray-800" : "bg-white"}`}>
+		<View className="p-4 mb-2 bg-card">
 			<PostHeader
 				username={post.username}
 				avatarTemplate={post.avatar_template}

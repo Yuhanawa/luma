@@ -1,5 +1,4 @@
 import { formatDistanceToNow } from "date-fns";
-import { useColorScheme } from "nativewind";
 import { View } from "react-native";
 import { UserAvatar } from "~/components/UserAvatar";
 import { Text } from "~/components/ui/text";
@@ -21,25 +20,17 @@ export const formatDate = (dateString: string) => {
 };
 
 export const PostHeader = ({ username, avatarTemplate, createdAt, postNumber }: PostHeaderProps) => {
-	const { colorScheme } = useColorScheme();
-	const isDark = colorScheme === "dark";
-
 	return (
 		<View className="flex-row justify-between items-center mb-3">
 			<View className="flex-row items-center">
-				<UserAvatar
-					username={username}
-					avatarTemplate={avatarTemplate}
-					size={32}
-					fallbackClassName={isDark ? "bg-gray-700" : "bg-gray-200"}
-				/>
+				<UserAvatar username={username} avatarTemplate={avatarTemplate} size={32} fallbackClassName="bg-muted" />
 				<View className="ml-2">
-					<Text className={`font-medium ${isDark ? "text-white" : "text-gray-900"}`}>{username}</Text>
-					<Text className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>{formatDate(createdAt)}</Text>
+					<Text className="font-medium text-foreground">{username}</Text>
+					<Text className="text-xs text-muted-foreground">{formatDate(createdAt)}</Text>
 				</View>
 			</View>
 
-			<Text className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>#{postNumber}</Text>
+			<Text className="text-xs text-muted-foreground">#{postNumber}</Text>
 		</View>
 	);
 };

@@ -1,6 +1,5 @@
-// import { RefreshCw } from "lucide-react-native";
+import { RefreshCw } from "lucide-react-native";
 import { Pressable, Text, View } from "react-native";
-import { RefreshCw } from "~/lib/icons";
 
 export const ErrorRetry = ({ onRetry }: { onRetry: () => void }) => {
 	return (

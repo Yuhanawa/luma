@@ -5,8 +5,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated";
 import { ErrorRetry } from "../ErrorRetry";
-import { TopicSkeleton } from "../TopicSkeleton";
 import { TopicCard, type TopicCardItem } from "./TopicCard";
+import { TopicSkeleton } from "./TopicSkeleton";
 
 type TopicListProps = {
 	initialItems?: TopicCardItem[];
@@ -147,13 +147,11 @@ export const TopicList = ({
 	return (
 		<View className="flex-1">
 			<View className="flex-row justify-between items-center px-4 py-3">
-				<Text className={`font-bold text-lg ${isDark ? "text-white" : "text-gray-900"}`}>{title}</Text>
+				<Text className="font-bold text-lg text-foreground">{title}</Text>
 
 				<View className="flex-row">
 					<Pressable
-						className={`mr-2 px-3 py-1 rounded-full flex-row items-center ${
-							filterType !== "all" ? (isDark ? "bg-blue-900" : "bg-blue-100") : "bg-transparent"
-						}`}
+						className={`mr-2 px-3 py-1 rounded-full flex-row items-center ${filterType !== "all" ? "bg-primary/10" : "bg-transparent"}`}
 						onPress={() => {
 							setFilterType((current) => {
 								if (current === "all") return "unread";
@@ -164,7 +162,7 @@ export const TopicList = ({
 						}}
 					>
 						{getFilterIcon()}
-						<Text className={`ml-1 text-xs ${isDark ? "text-blue-300" : "text-blue-600"}`}>
+						<Text className="ml-1 text-xs text-primary">
 							{filterType === "all" ? "All" : filterType === "unread" ? "Unread" : filterType === "bookmarked" ? "Bookmarked" : "Trending"}
 						</Text>
 					</Pressable>
