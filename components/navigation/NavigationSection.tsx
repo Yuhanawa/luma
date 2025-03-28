@@ -1,21 +1,25 @@
 import { ChevronRight } from "lucide-react-native";
+import type { Key } from "react";
 import { View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { Text } from "~/components/ui/text";
 import { Button } from "../ui/button";
 
-interface CategorySectionProps {
+export type NavigationItem<T> = {
+	key: Key;
+	text: string;
+	data: T;
+};
+
+interface NavigationSectionProps<T> {
 	title: string;
-	items: Array<{
-		id: string;
-		text: string;
-	}>;
-	onItemPress?: (id: string) => void;
+	items: NavigationItem<T>[];
+	onItemPress?: (item: NavigationItem<T>) => void;
 	onViewMore?: () => void;
 	delay?: number;
 }
 
-export function NavigationSection({ title, items, onItemPress, onViewMore, delay = 0 }: CategorySectionProps) {
+export function NavigationSection<T>({ title, items, onItemPress, onViewMore, delay = 0 }: NavigationSectionProps<T>) {
 	return (
 		<Animated.View entering={FadeIn.delay(delay)} className="mb-4 mx-4 p-4 bg-muted/50 rounded-lg">
 			<View className="flex-row items-center justify-between mb-3">
@@ -28,7 +32,7 @@ export function NavigationSection({ title, items, onItemPress, onViewMore, delay
 
 			<View className="flex-row flex-wrap gap-3">
 				{items.map((item) => (
-					<Button key={item.id} variant="outline" size="sm" className="flex-1 min-w-[45%]" onPress={() => onItemPress?.(item.id)}>
+					<Button key={item.key} variant="outline" size="sm" className="flex-1 min-w-[45%]" onPress={() => onItemPress?.(item)}>
 						<Text className="text-sm">{item.text}</Text>
 					</Button>
 				))}
