@@ -2,22 +2,8 @@ import { Stack } from "expo-router";
 import { ExternalLink } from "lucide-react-native";
 import { Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { EXTERNAL_LINKS } from "~/app/(tabs)/navigation";
 import { NavigationList } from "~/components/navigation/NavigationList";
-
-const MOCK_EXTERNAL = [
-	{
-		id: "https://example1.com",
-		text: "External Resource 1",
-		description: "Visit this amazing resource",
-		icon: <ExternalLink className="text-primary" size={20} />,
-	},
-	{
-		id: "https://example2.com",
-		text: "External Resource 2",
-		description: "Another useful external link",
-		icon: <ExternalLink className="text-primary" size={20} />,
-	},
-];
 
 export default function ExternalLinksScreen() {
 	return (
@@ -30,7 +16,16 @@ export default function ExternalLinksScreen() {
 				}}
 			/>
 
-			<NavigationList items={MOCK_EXTERNAL} onItemPress={Linking.openURL} />
+			<NavigationList
+				items={EXTERNAL_LINKS.map((link) => ({
+					id: link.data,
+					text: link.text,
+					description: "External resource",
+					icon: <ExternalLink className="text-primary" size={20} />,
+					data: link.data,
+				}))}
+				onItemPress={(item) => Linking.openURL(item.data)}
+			/>
 		</SafeAreaView>
 	);
 }

@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { Dimensions, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import { HistorySection } from "~/components/history/HistorySection";
 import { type FlattenedTopicPanelProps, type TopicMethods, TopicPanel, type TopicPanelProps } from "~/components/topic/TopicPanel";
 import { TopicSkeleton } from "~/components/topic/TopicSkeleton";
 import { Text } from "~/components/ui/text";
+import { useHistoryStore } from "~/store/historyStore";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -25,8 +27,18 @@ type ActivityScreenParams =
 			direction?: Direction;
 	  } & NumberToString<FlattenedTopicPanelProps>);
 
-export function go2ActivityScreen(params?: ActivityScreenParams) {
+export function go2ActivityScreen(params?: ActivityScreenParams, title?: string) {
 	const router = useRouter();
+	const historyStore = useHistoryStore.getState();
+
+	// Add to history if title is provided
+	if (title && params) {
+		historyStore.addToHistory({
+			title,
+			params,
+		});
+	}
+
 	router.navigate(`/activityScreen?${new URLSearchParams({ direction: "bottom", ...params, auth: "go2ActivityScreen" }).toString()}`);
 }
 
@@ -189,8 +201,11 @@ export default function ActivityScreen() {
 			<GestureDetector gesture={backGesture}>
 				<Animated.View style={animatedStyle}>
 					<View className="flex-1 bg-background">
-						<View className="h-14 px-4 flex-row items-center border-b border-border">
-							<Text className="text-lg font-semibold">Activities</Text>
+						<View className="px-4 border-b border-border">
+							<View className="h-14 flex-row items-center">
+								<Text className="text-lg font-semibold">Activities</Text>
+							</View>
+							<HistorySection />
 						</View>
 						<View className="flex-1">
 							{loaded ? (
@@ -199,6 +214,7 @@ export default function ActivityScreen() {
 									params as ActivityScreenParams & {
 										listTopics: TopicMethods;
 									},
+									true,
 								)
 							) : (
 								<TopicSkeleton />
@@ -215,9 +231,33 @@ function getTopicPanel(
 	params: ActivityScreenParams & {
 		listTopics: TopicMethods;
 	},
+	addToHistory: boolean,
 ) {
 	let props = null;
 	if ("id" in params) props = { ...params, id: Number.parseInt(params.id) };
 	props ??= params;
+
+	// Add to history if needed
+	if (addToHistory) {
+		const historyStore = useHistoryStore.getState();
+		let title = "";
+
+		// Generate a title based on the params
+		if (params.listTopics === "listCategoryTopics" && "slug" in params) {
+			title = `Category: ${params.slug}`;
+		} else if (params.listTopics === "getTag" && "name" in params) {
+			title = `Tag: ${params.name}`;
+		} else if (params.listTopics === "listLatestTopics") {
+			title = "Latest Topics";
+		} else {
+			title = `${params.listTopics}`;
+		}
+
+		historyStore.addToHistory({
+			title,
+			params,
+		});
+	}
+
 	return <TopicPanel {...(props as TopicPanelProps)} />;
 }

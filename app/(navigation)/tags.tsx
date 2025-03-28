@@ -1,25 +1,26 @@
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { Hash } from "lucide-react-native";
+import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationList } from "~/components/navigation/NavigationList";
-
-const MOCK_TAGS = [
-	{
-		id: "1",
-		text: "Popular Tag 1",
-		count: 156,
-		icon: <Hash className="text-primary" size={20} />,
-	},
-	{
-		id: "2",
-		text: "Popular Tag 2",
-		count: 89,
-		icon: <Hash className="text-primary" size={20} />,
-	},
-];
+import { useTagsStore } from "~/store/tagsStore";
+import { go2ActivityScreen } from "../activityScreen";
 
 export default function TagsScreen() {
-	const router = useRouter();
+	const { tags, init } = useTagsStore();
+
+	useEffect(() => {
+		init();
+	}, [init]);
+
+	// Convert store tags to NavigationList format
+	const tagItems = tags.map((tag) => ({
+		id: tag.key.toString(),
+		text: tag.text,
+		count: tag.data.count,
+		icon: <Hash className="text-primary" size={20} />,
+		data: tag, // Store the original tag for easy access
+	}));
 
 	return (
 		<SafeAreaView className="flex-1 bg-background">
@@ -32,8 +33,17 @@ export default function TagsScreen() {
 			/>
 
 			<NavigationList
-				items={MOCK_TAGS}
-				// onItemPress={(id) => router.push(`/tag/${id}`)}
+				items={tagItems}
+				onItemPress={(item) => {
+					const tag = item.data;
+					go2ActivityScreen(
+						{
+							listTopics: "getTag",
+							name: tag.text,
+						},
+						`Tag: ${tag.text}`,
+					);
+				}}
 			/>
 		</SafeAreaView>
 	);

@@ -1,41 +1,51 @@
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { Bookmark } from "lucide-react-native";
+import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationList } from "~/components/navigation/NavigationList";
+import { useCategoriesStore } from "~/store/categoriesStore";
+import { go2ActivityScreen } from "../activityScreen";
 
-const MOCK_COLLECTIONS = [
-	{
-		id: "1",
-		text: "Popular Collection 1",
-		description: "Curated collection of popular items",
-		count: 42,
-		icon: <Bookmark className="text-primary" size={20} />,
-	},
-	{
-		id: "2",
-		text: "Popular Collection 2",
-		description: "Another great collection",
-		count: 28,
-		icon: <Bookmark className="text-primary" size={20} />,
-	},
-];
+export default function CategoriesScreen() {
+	const { categories, init } = useCategoriesStore();
 
-export default function CollectionsScreen() {
-	const router = useRouter();
+	useEffect(() => {
+		init();
+	}, [init]);
+
+	// Convert store categories to NavigationList format
+	const categoryItems = categories.map((category) => ({
+		id: category.key.toString(),
+		text: category.text,
+		description: category.data.description ? String(category.data.description) : undefined,
+		count: category.data.topic_count,
+		icon: <Bookmark className="text-primary" size={20} />,
+		data: category, // Store the original category for easy access
+	}));
 
 	return (
 		<SafeAreaView className="flex-1 bg-background">
 			<Stack.Screen
 				options={{
-					title: "Collections",
+					title: "Categories",
 					headerLargeTitle: true,
 					headerBlurEffect: "regular",
 				}}
 			/>
 
 			<NavigationList
-				items={MOCK_COLLECTIONS}
-				// onItemPress={(id) => router.push(`/collection/${id}`)}
+				items={categoryItems}
+				onItemPress={(item) => {
+					const category = item.data;
+					go2ActivityScreen(
+						{
+							listTopics: "listCategoryTopics",
+							id: String(category.data.id),
+							slug: category.data.slug,
+						},
+						`Category: ${category.text}`,
+					);
+				}}
 			/>
 		</SafeAreaView>
 	);
