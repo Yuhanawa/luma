@@ -4,23 +4,24 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 
-interface NavigationItem {
+interface NavigationItem<T> {
 	id: string;
 	text: string;
 	description?: string;
 	count?: number;
 	icon?: React.ReactNode;
+	data: T;
 }
 
-interface NavigationListProps {
-	items: NavigationItem[];
-	onItemPress?: (id: string) => void;
+interface NavigationListProps<T> {
+	items: NavigationItem<T>[];
+	onItemPress?: (item: NavigationItem<T>) => void;
 }
 
-export function NavigationList({ items, onItemPress }: NavigationListProps) {
-	const renderItem = ({ item, index }: { item: NavigationItem; index: number }) => (
+export function NavigationList<T>({ items, onItemPress }: NavigationListProps<T>) {
+	const renderItem = ({ item, index }: { item: NavigationItem<T>; index: number }) => (
 		<Animated.View entering={FadeInDown.delay(index * 50).springify()} className="mb-3">
-			<Button variant="outline" className="p-4 flex-row items-center justify-between" onPress={() => onItemPress?.(item.id)}>
+			<Button variant="outline" className="p-4 flex-row items-center justify-between" onPress={() => onItemPress?.(item)}>
 				<View className="flex-row items-center flex-1">
 					{item.icon && <View className="mr-3">{item.icon}</View>}
 					<View className="flex-1">
