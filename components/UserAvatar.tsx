@@ -20,7 +20,7 @@ export const UserAvatar = ({ username, avatarTemplate, size = 40, fallbackClassN
 
 	return (
 		<Avatar style={{ height: size, width: size }} alt={`${username}'s avatar`}>
-			{avatarTemplate && <AvatarImage source={{ uri: getAvatarUrl(avatarTemplate, size) }} className="aspect-square h-full w-full" />}{" "}
+			{avatarTemplate && <AvatarImage source={{ uri: getAvatarUrl(avatarTemplate, size) }} className="aspect-square h-full w-full" />}
 			<AvatarFallback className={fallbackClassName}>
 				<Text className="text-base font-medium uppercase">{fallbackText}</Text>
 			</AvatarFallback>
