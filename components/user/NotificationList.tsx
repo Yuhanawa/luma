@@ -2,12 +2,11 @@ import { FlashList } from "@shopify/flash-list";
 import { View } from "react-native";
 import { Text } from "~/components/ui/text";
 import { NotificationItem } from "./NotificationItem";
-import type { Notification } from "./NotificationItem";
 
 interface NotificationListProps {
-	notifications: Notification[];
-	onNotificationPress?: (notification: Notification) => void;
-	onMarkAsRead?: (notification: Notification) => void;
+	notifications: NotificationItem[];
+	onNotificationPress?: (notification: NotificationItem) => void;
+	onMarkAsRead?: (notification: NotificationItem) => void;
 	onRefresh?: () => Promise<void>;
 	isRefreshing?: boolean;
 }

@@ -1,5 +1,5 @@
 import { ChevronRight } from "lucide-react-native";
-import { Pressable, View } from "react-native";
+import { type GestureResponderEvent, Pressable, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { Text } from "~/components/ui/text";
 
@@ -17,25 +17,24 @@ function StatItem({ value, label }: StatItemProps) {
 	);
 }
 
-export function UserStats() {
+interface UserStatsProps {
+	stats: StatItemProps[];
+	onPress?: ((event: GestureResponderEvent) => void) | null | undefined;
+}
+
+export function UserStats({ stats, onPress }: UserStatsProps) {
 	return (
 		<Animated.View entering={FadeIn.delay(200)} className="mt-4 mb-4">
-			<Pressable
-				className="p-4 bg-muted/50 rounded-lg"
-				onPress={() => {
-					// Handle stats press
-				}}
-			>
+			<Pressable className="p-4 bg-muted/50 rounded-lg" onPress={onPress}>
 				<View className="flex-row items-center justify-between mb-4">
 					<Text className="text-lg">User's some stats</Text>
 					<ChevronRight className="text-muted-foreground" size={20} />
 				</View>
 
 				<View className="flex-row justify-between">
-					<StatItem value={42} label="Days visited" />
-					<StatItem value={128} label="Time read" />
-					<StatItem value={256} label="Topics read" />
-					<StatItem value={512} label="Likes received" />
+					{stats.map((stat) => (
+						<StatItem key={stat.label} value={stat.value} label={stat.label} />
+					))}
 				</View>
 			</Pressable>
 		</Animated.View>

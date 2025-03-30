@@ -4,20 +4,48 @@ import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler"
 import { FadeIn } from "react-native-reanimated";
 import Reanimated from "react-native-reanimated";
 import { Text } from "~/components/ui/text";
+import type { GetNotifications200NotificationsItem } from "~/lib/gen/api/discourseAPI/schemas";
+import { UserAvatar } from "../UserAvatar";
 
-export interface Notification {
-	id: string;
-	title: string;
-	description: string;
+export type NotificationItem = GetNotifications200NotificationsItem & {
+	acting_user_avatar_template?: string;
+	acting_user_name?: string;
+	created_at: string;
+	data: {
+		display_name?: string;
+		display_username?: string;
+		original_name?: string;
+		original_post_id?: number;
+		original_post_type?: number;
+		original_username?: string;
+		reaction_icon?: string;
+		revision_number?: number;
+		topic_title?: string;
+		badge_id?: number;
+		badge_name?: string;
+		badge_slug?: string;
+		badge_title?: boolean;
+		username?: string;
+		message?: string;
+		title?: string;
+		count?: number;
+	};
+	fancy_title?: string;
+	high_priority?: boolean;
+	id: number;
+	notification_type: number;
+	post_number?: number;
 	read: boolean;
-	createdAt: string;
-}
+	slug?: string;
+	topic_id?: number;
+	user_id: number;
+};
 
 interface NotificationItemProps {
-	notification: Notification;
+	notification: NotificationItem;
 	index: number;
-	onPress?: (notification: Notification) => void;
-	onMarkAsRead?: (notification: Notification) => void;
+	onPress?: (notification: NotificationItem) => void;
+	onMarkAsRead?: (notification: NotificationItem) => void;
 }
 
 export function NotificationItem({ notification, index, onPress, onMarkAsRead }: NotificationItemProps) {
@@ -52,10 +80,15 @@ export function NotificationItem({ notification, index, onPress, onMarkAsRead }:
 						onPress={() => onPress?.(notification)}
 						className={`flex-row items-center p-4 gap-3 ${notification.read ? "opacity-60" : ""}`}
 					>
-						<View className="w-8 h-8 rounded-full bg-primary/20" />
+						<UserAvatar
+							username={notification.acting_user_name ?? notification.fancy_title ?? "notification"}
+							avatarTemplate={notification.acting_user_avatar_template}
+						/>
 						<View className="flex-1">
-							<Text className="font-medium">{notification.title}</Text>
-							<Text className="text-sm text-muted-foreground">{notification.description}</Text>
+							<Text className="font-medium">
+								{notification.notification_type}: {notification.fancy_title ?? notification.topic_id}
+							</Text>
+							<Text className="text-sm text-muted-foreground">{JSON.stringify(notification.data)}</Text>
 						</View>
 						{!notification.read && <View className="w-2 h-2 rounded-full bg-primary" />}
 					</Pressable>
