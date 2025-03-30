@@ -8,7 +8,7 @@ type PostListProps = {
 	posts: GetTopic200PostStreamPostsItem[];
 	onReply?: (post: GetTopic200PostStreamPostsItem) => void;
 	onLike?: (post: GetTopic200PostStreamPostsItem) => void;
-	onMore?: (post: GetTopic200PostStreamPostsItem) => void;
+	renderMore?: (post: GetTopic200PostStreamPostsItem) => React.ReactNode;
 	onLoadMore?: () => Promise<void>;
 	onRefresh?: () => Promise<void>;
 	isLoading?: boolean;
@@ -16,10 +16,12 @@ type PostListProps = {
 	ListHeaderComponent?: ComponentType<any> | ReactElement<any, string | JSXElementConstructor<any>> | null | undefined;
 };
 
-export const PostList = ({ posts, onReply, onLike, onMore, onLoadMore, onRefresh, isLoading, ListHeaderComponent }: PostListProps) => {
+export const PostList = ({ posts, onReply, onLike, renderMore, onLoadMore, onRefresh, isLoading, ListHeaderComponent }: PostListProps) => {
 	const renderItem = useCallback(
-		({ item }: { item: GetTopic200PostStreamPostsItem }) => <PostItem post={item} onReply={onReply} onLike={onLike} onMore={onMore} />,
-		[onReply, onLike, onMore],
+		({ item }: { item: GetTopic200PostStreamPostsItem }) => (
+			<PostItem post={item} onReply={onReply} onLike={onLike} renderMore={renderMore} />
+		),
+		[onReply, onLike, renderMore],
 	);
 
 	return (

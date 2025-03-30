@@ -5,6 +5,7 @@ import { TopicList } from "~/components/topic/TopicList";
 import { Text } from "~/components/ui/text";
 import type LinuxDoClient from "~/lib/linuxDoClient";
 import { useLinuxDoClientStore } from "~/store/linuxDoClientStore";
+import type { SwipeAction } from "../SwipeableWrapper";
 import type { TopicCardItem } from "./TopicCard";
 
 export type TopicMethods = "listLatestTopics" | "listUnreadTopics" | "getTag" | "listCategoryTopics";
@@ -26,8 +27,13 @@ export type TopicPanelProps = CommonTopicPanelProps | TagTopicPanelProps | Categ
 
 type FlattenParams<T> = T extends { params: infer P } ? Omit<T, "params"> & P : T;
 export type FlattenedTopicPanelProps = FlattenParams<TopicPanelProps>;
+export type WithTopicPanelComponentProps<T> = T & {
+	title?: string;
+	swipe?: SwipeAction<TopicCardItem>[];
+};
+export type TopicPanelComponentProps = WithTopicPanelComponentProps<TopicPanelProps>;
 
-export function TopicPanel(props: TopicPanelProps) {
+export function TopicPanel(props: TopicPanelComponentProps) {
 	const listTopics = props.listTopics;
 
 	const client = useLinuxDoClientStore().client!;
@@ -115,18 +121,9 @@ export function TopicPanel(props: TopicPanelProps) {
 			onRefresh={handleRefresh}
 			onLoadMore={handleLoadMore}
 			hasMore={hasMore}
-			title="Forum Topics"
-			onMarkAsRead={(id) => {
-				/* TODO: Implement mark as read */
-			}}
-			onDelete={(id) => {
-				/* TODO: Implement delete */
-			}}
-			onBookmark={(id) => {
-				/* TODO: Implement bookmark */
-			}}
+			title={props.title}
 			onPress={(id) => router.push(`/topic/${id}`)}
-			enableSwipe={false}
+			swipe={props.swipe}
 		/>
 	) : (
 		<View className="flex-1 items-center justify-center">
@@ -136,12 +133,17 @@ export function TopicPanel(props: TopicPanelProps) {
 }
 
 /** @deprecated Use TopicPanel directly */
-export function CommonTopicPanel({ listTopics }: CommonTopicPanelProps) {
-	return <TopicPanel listTopics={listTopics} />;
+export function CommonTopicPanel({ listTopics, ...props }: WithTopicPanelComponentProps<CommonTopicPanelProps>) {
+	return <TopicPanel listTopics={listTopics} {...props} />;
 }
-export function TagTopicPanel({ listTopics, name }: FlattenParams<TagTopicPanelProps>) {
-	return <TopicPanel listTopics={listTopics} params={{ name }} />;
+export function TagTopicPanel({ listTopics, name, ...props }: WithTopicPanelComponentProps<FlattenParams<TagTopicPanelProps>>) {
+	return <TopicPanel listTopics={listTopics} params={{ name }} {...props} />;
 }
-export function CategoryTopicPanel({ listTopics, slug, id }: FlattenParams<CategoryTopicPanelProps>) {
-	return <TopicPanel listTopics={listTopics} params={{ slug, id }} />;
+export function CategoryTopicPanel({
+	listTopics,
+	slug,
+	id,
+	...props
+}: WithTopicPanelComponentProps<FlattenParams<CategoryTopicPanelProps>>) {
+	return <TopicPanel listTopics={listTopics} params={{ slug, id }} {...props} />;
 }

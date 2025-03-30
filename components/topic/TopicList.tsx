@@ -5,21 +5,20 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated";
 import { ErrorRetry } from "../ErrorRetry";
+import type { SwipeAction } from "../SwipeableWrapper";
 import { TopicCard, type TopicCardItem } from "./TopicCard";
 import { TopicSkeleton } from "./TopicSkeleton";
 
 type TopicListProps = {
 	initialItems?: TopicCardItem[];
+	onPress?: (id: number) => void;
 	onRefresh?: () => Promise<void>;
-	onLoadMore?: () => Promise<void>;
 	hasMore?: boolean | (() => boolean);
+	onLoadMore?: () => Promise<void>;
 	emptyStateMessage?: string;
 	title?: string;
-	onMarkAsRead?: (id: number) => void;
-	onDelete?: (id: number) => void;
-	onBookmark?: (id: number) => void;
-	onPress?: (id: number) => void;
 	enableSwipe?: boolean;
+	swipe?: SwipeAction<TopicCardItem>[];
 };
 
 export const TopicList = ({
@@ -29,11 +28,9 @@ export const TopicList = ({
 	onLoadMore,
 	emptyStateMessage = "No topics to display",
 	title = "Topics",
-	onMarkAsRead,
-	onDelete,
-	onBookmark,
 	onPress,
 	enableSwipe = true,
+	swipe,
 }: TopicListProps) => {
 	const { colorScheme } = useColorScheme();
 	const [items, setItems] = useState<TopicCardItem[]>(initialItems);
@@ -96,18 +93,9 @@ export const TopicList = ({
 
 	const renderItem = useCallback(
 		({ item }: { item: TopicCardItem }) => {
-			return (
-				<TopicCard
-					item={item}
-					onMarkAsRead={onMarkAsRead}
-					onDelete={onDelete}
-					onBookmark={onBookmark}
-					onPress={onPress}
-					enableSwipe={enableSwipe}
-				/>
-			);
+			return <TopicCard item={item} onPress={onPress} enableSwipe={enableSwipe} swipe={swipe} />;
 		},
-		[onMarkAsRead, onDelete, onBookmark, onPress, enableSwipe],
+		[onPress, enableSwipe, swipe],
 	);
 
 	const renderFooter = () => {
@@ -150,7 +138,8 @@ export const TopicList = ({
 				<Text className="font-bold text-lg text-foreground">{title}</Text>
 
 				<View className="flex-row">
-					<Pressable
+					{/* TODO  filter */}
+					{/* <Pressable
 						className={`mr-2 px-3 py-1 rounded-full flex-row items-center ${filterType !== "all" ? "bg-primary/10" : "bg-transparent"}`}
 						onPress={() => {
 							setFilterType((current) => {
@@ -165,7 +154,7 @@ export const TopicList = ({
 						<Text className="ml-1 text-xs text-primary">
 							{filterType === "all" ? "All" : filterType === "unread" ? "Unread" : filterType === "bookmarked" ? "Bookmarked" : "Trending"}
 						</Text>
-					</Pressable>
+					</Pressable> */}
 
 					<Pressable className="p-2 rounded-full" onPress={handleRefresh}>
 						<RefreshCw size={16} color={isDark ? "#E5E7EB" : "#6B7280"} />

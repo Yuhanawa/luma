@@ -8,10 +8,10 @@ interface PostItemProps {
 	post: GetTopic200PostStreamPostsItem;
 	onReply?: (post: GetTopic200PostStreamPostsItem) => void;
 	onLike?: (post: GetTopic200PostStreamPostsItem) => void;
-	onMore?: (post: GetTopic200PostStreamPostsItem) => void;
+	renderMore?: (post: GetTopic200PostStreamPostsItem) => React.ReactNode;
 }
 
-export const PostItem = ({ post, onReply, onLike, onMore }: PostItemProps) => {
+export const PostItem = ({ post, onReply, onLike, renderMore }: PostItemProps) => {
 	return (
 		<View className="p-4 mb-2 bg-card">
 			<PostHeader
@@ -23,7 +23,7 @@ export const PostItem = ({ post, onReply, onLike, onMore }: PostItemProps) => {
 
 			<PostContent html={post.cooked} />
 
-			<PostActions post={post} onReply={onReply} onLike={onLike} onMore={onMore} />
+			<PostActions post={post} onReply={onReply} onLike={onLike} renderMore={renderMore} />
 		</View>
 	);
 };

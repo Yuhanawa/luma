@@ -1,12 +1,13 @@
 import { formatDistanceToNow } from "date-fns";
 import { Image } from "expo-image";
-import { Check, Clock, Eye, MessageCircle, Star, Trash2 } from "lucide-react-native";
-import { useRef, useState } from "react";
+import { Clock, Eye, Heart, MessageCircle, Star, Trash2 } from "lucide-react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Animated, Pressable, View } from "react-native";
-import { GestureHandlerRootView, type Swipeable } from "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Text } from "~/components/ui/text";
 import type { paths } from "~/lib/api/schema";
-import { SwipeableWrapper } from "../SwipeableWrapper";
+import { useCategoriesStore } from "~/store/categoriesStore";
+import { type SwipeAction, SwipeableWrapper } from "../SwipeableWrapper";
 
 export type TopicCardItem = NonNullable<
 	NonNullable<paths["/latest.json"]["get"]["responses"]["200"]["content"]["application/json"]["topic_list"]>["topics"]
@@ -14,14 +15,18 @@ export type TopicCardItem = NonNullable<
 
 type TopicCardProps = {
 	item: TopicCardItem;
-	onMarkAsRead?: (id: number) => void;
-	onDelete?: (id: number) => void;
-	onBookmark?: (id: number) => void;
 	onPress?: (id: number) => void;
 	enableSwipe?: boolean;
+	swipe?: SwipeAction<TopicCardItem>[];
 };
 
-export const TopicCard = ({ item, onMarkAsRead, onDelete, onBookmark, onPress, enableSwipe = true }: TopicCardProps) => {
+export const TopicCard = ({ item, onPress, enableSwipe = true, swipe }: TopicCardProps) => {
+	const { categories, init: initCategories } = useCategoriesStore();
+
+	useEffect(() => {
+		initCategories();
+	}, [initCategories]);
+
 	const scaleAnim = useRef(new Animated.Value(1)).current;
 	const hasUnread = item.unseen || (item.unread_posts && item.unread_posts > 0);
 
@@ -48,16 +53,11 @@ export const TopicCard = ({ item, onMarkAsRead, onDelete, onBookmark, onPress, e
 			"Choose an action",
 			[
 				{
-					text: hasUnread ? "Mark as read" : "Mark as unread",
-					onPress: () => onMarkAsRead?.(item.id!),
+					text: "TODO",
+					style: "destructive",
 				},
 				{
-					text: item.bookmarked ? "Remove bookmark" : "Bookmark",
-					onPress: () => onBookmark?.(item.id!),
-				},
-				{
-					text: "Delete",
-					onPress: () => onDelete?.(item.id!),
+					text: "Let's believe it will done soon",
 					style: "destructive",
 				},
 				{
@@ -66,49 +66,6 @@ export const TopicCard = ({ item, onMarkAsRead, onDelete, onBookmark, onPress, e
 				},
 			],
 			{ cancelable: true },
-		);
-	};
-
-	const renderRightActions = (
-		progress: Animated.AnimatedInterpolation<number>,
-		drag: Animated.AnimatedInterpolation<number>,
-		swipeable: Swipeable,
-	) => {
-		const translateX = progress.interpolate({
-			inputRange: [0, 1],
-			outputRange: [100, 0],
-		});
-
-		if (item.id === undefined) {
-			return (
-				<View>
-					<Text>ERROR: ID is undefined</Text>
-				</View>
-			);
-		}
-
-		return (
-			<View className="flex-row pt-3 pb-6">
-				<Animated.View style={{ transform: [{ translateX }] }}>
-					<Pressable
-						className="bg-blue-500 justify-center items-center w-20 h-full"
-						onPress={() => {
-							onMarkAsRead?.(item.id!);
-							swipeable.close();
-						}}
-					>
-						<Check size={24} color="white" />
-						<Text className="text-white text-xs mt-1">{hasUnread ? "Read" : "Unread"}</Text>
-					</Pressable>
-				</Animated.View>
-
-				<Animated.View style={{ transform: [{ translateX }] }}>
-					<Pressable className="bg-red-500 justify-center items-center w-20 h-full" onPress={() => onDelete?.(item.id!)}>
-						<Trash2 size={24} color="white" />
-						<Text className="text-white text-xs mt-1">Delete</Text>
-					</Pressable>
-				</Animated.View>
-			</View>
 		);
 	};
 
@@ -130,10 +87,11 @@ export const TopicCard = ({ item, onMarkAsRead, onDelete, onBookmark, onPress, e
 	const lastPostedAt = item.last_posted_at || item.created_at || "";
 	const lastPosterUsername = item.last_poster_username || "";
 	const categoryId = item.category_id || 0;
+	const category = useMemo(() => categories.find((c) => c.data.id === categoryId), [categories, categoryId]);
 
 	return (
 		<GestureHandlerRootView>
-			<SwipeableWrapper enableSwipe={enableSwipe} renderRightActions={renderRightActions}>
+			<SwipeableWrapper enableSwipe={enableSwipe} swipe={swipe} item={item}>
 				<Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
 					<Pressable
 						onPress={() => onPress?.(item.id!)}
@@ -167,18 +125,18 @@ export const TopicCard = ({ item, onMarkAsRead, onDelete, onBookmark, onPress, e
 						<View className="flex-row justify-between items-center mb-2">
 							<View className="flex-row items-center">
 								<View className="flex-row items-center mr-4">
-									<MessageCircle size={16} className="text-muted-foreground" />
-									<Text className="ml-1 text-sm text-muted-foreground">{postsCount}</Text>
-								</View>
-
-								<View className="flex-row items-center mr-4">
 									<Eye size={16} className="text-muted-foreground" />
 									<Text className="ml-1 text-sm text-muted-foreground">{views}</Text>
 								</View>
 
+								<View className="flex-row items-center mr-4">
+									<MessageCircle size={16} className="text-muted-foreground" />
+									<Text className="ml-1 text-sm text-muted-foreground">{postsCount}</Text>
+								</View>
+
 								{likeCount > 0 && (
 									<View className="flex-row items-center">
-										<Star size={16} className="text-muted-foreground" fill={item.bookmarked ? "#EAB308" : "none"} />
+										<Heart size={16} className="text-muted-foreground" fill={item.bookmarked ? "#EAB308" : "none"} />
 										<Text className="ml-1 text-sm text-muted-foreground">{likeCount}</Text>
 									</View>
 								)}
@@ -197,9 +155,19 @@ export const TopicCard = ({ item, onMarkAsRead, onDelete, onBookmark, onPress, e
 									Last reply by <Text className="font-medium">{lastPosterUsername}</Text>
 								</Text>
 
-								{categoryId > 0 && (
-									<View className="px-2 py-1 rounded-full bg-gray-200">
-										<Text className="text-xs text-gray-700">#{categoryId}</Text>
+								{category && (
+									<View
+										className="px-2 py-1 rounded-full bg-card-foreground/80"
+										// style={{ backgroundColor: `#${category.data.color}` }}
+										// ugly
+									>
+										{/* <Image source={{ uri: LINUXDO_CONST.HTTPS_URL + category.data.uploaded_logo }} className="w-4 h-4 mr-1" /> */}
+										<Text
+											className="text-xs text-card/80"
+											// style={{ color: `#${category.data.text_color}` }}
+										>
+											#{category.text}
+										</Text>
 									</View>
 								)}
 							</View>
