@@ -1,22 +1,33 @@
 import { Tabs } from "expo-router";
-import { BedIcon, HomeIcon, Menu } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import { HomeIcon, Menu } from "lucide-react-native";
+import React, { useEffect, useMemo, useState } from "react";
 import { Platform, View } from "react-native";
 import Animated, { FadeIn, FadeInRight } from "react-native-reanimated";
-import { Text } from "~/components/ui/text";
+import { UserAvatar } from "~/components/UserAvatar";
 import { useLinuxDoClientStore } from "~/store/linuxDoClientStore";
+import { useUserStore } from "~/store/userStore";
 
 export default function TabLayout() {
 	const [loading, setLoading] = useState(true);
 	const linuxDoClientState = useLinuxDoClientStore();
+	const { username, userData, init: initUser } = useUserStore();
+
+	// Prevent re-rendering on switching tabs
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only refresh when username changes
+	const userAvatarIcon = useMemo(
+		() => <UserAvatar username={username} avatarTemplate={userData?.user.avatar_template} size={24} />,
+		[username],
+	);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: only run once
 	useEffect(() => {
 		if (linuxDoClientState.client !== null) {
 			setLoading(false);
+			initUser();
 		} else {
 			linuxDoClientState.init().then(() => {
 				setLoading(false);
+				initUser();
 			});
 		}
 	}, []);
@@ -74,7 +85,7 @@ export default function TabLayout() {
 				name="user"
 				options={{
 					title: "User",
-					tabBarIcon: ({ color }) => <BedIcon color={color} />,
+					tabBarIcon: ({ color }) => userAvatarIcon,
 				}}
 			/>
 		</Tabs>
