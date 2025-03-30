@@ -35,6 +35,11 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# app-example
 app-example
-.env
+
+# aider
 .aider*
+
+# intellij
+.idea
