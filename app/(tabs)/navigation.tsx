@@ -33,7 +33,7 @@ export default function NavigationScreen() {
 	return (
 		<ScrollView className="flex-1">
 			<View className="p-4">
-				<Text className="text-xl font-bold mb-4">Navigation</Text>
+				<Text className="text-xl font-semibold mb-4">Navigation</Text>
 			</View>
 
 			<NavigationSection
