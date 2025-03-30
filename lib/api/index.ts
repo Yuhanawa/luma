@@ -16,6 +16,10 @@
  *   console.log('New cookie:', newCookie);
  * });
  *
+ * discourse.on('usernameChanged', (newUsername, oldUsername) => {
+ *   console.log('Username changed from', oldUsername, 'to', newUsername);
+ * });
+ *
  * const initialCookie = "...";
  * discourse.setCookie(initialCookie);
  *
@@ -318,7 +322,12 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 					this.axiosInstance.defaults.headers.common["X-CSRF-Token"] = response.data.csrf;
 				}
 				if (response.headers["x-discourse-username"]) {
-					this.username = response.headers["x-discourse-username"];
+					const oldUsername = this.username;
+					const newUsername = response.headers["x-discourse-username"];
+					if (newUsername && oldUsername !== newUsername) {
+						this.username = newUsername;
+						this.emitUsernameChanged(newUsername, oldUsername);
+					}
 				}
 
 				console.log("Response:", response.config.url, response.status);
@@ -403,13 +412,11 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 		}
 	}
 
-	/**
-	 * Registers a listener for the 'cookieChanged' event.
-	 * @param eventName - 'cookieChanged'.
-	 * @param listener - Callback function.
-	 */
-	on(eventName: "cookieChanged", listener: (serializedCookieJar: SerializedCookieJar) => void) {
-		this.eventEmitter.on(eventName, listener);
+	onCookieChanged(listener: (serializedCookieJar: SerializedCookieJar) => void): void {
+		this.eventEmitter.on("cookieChanged", listener);
+	}
+	onUsernameChanged(listener: (newUsername: string, oldUsername: string | undefined) => void): void {
+		this.eventEmitter.on("usernameChanged", listener);
 	}
 
 	/**
@@ -418,6 +425,16 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 	 */
 	private async emitCookieChanged() {
 		this.eventEmitter.emit("cookieChanged", await this.cookieJar.serialize());
+	}
+
+	/**
+	 * Emits the 'usernameChanged' event.
+	 * @param newUsername - The new username.
+	 * @param oldUsername - The previous username.
+	 * @private
+	 */
+	private emitUsernameChanged(newUsername: string, oldUsername: string | undefined) {
+		this.eventEmitter.emit("usernameChanged", newUsername, oldUsername);
 	}
 
 	getUsername(): string | undefined {
