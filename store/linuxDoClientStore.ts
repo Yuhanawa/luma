@@ -7,23 +7,26 @@ import LinuxDoClient from "~/lib/linuxDoClient";
 
 interface LinuxDoClientState {
 	client: LinuxDoClient | null;
-	init: () => Promise<LinuxDoClient>;
+	init: () => Promise<void>;
+	isLoading: boolean;
 }
 
 export const useLinuxDoClientStore = create<LinuxDoClientState>()(
 	devtools(
 		(set, get) => ({
 			client: null,
+			isLoading: false,
 			init: async () => {
-				if (get().client !== null) return get().client!;
+				const { client: clientMaybeNull, isLoading } = get();
+				if (isLoading || clientMaybeNull !== null) return;
+				set({ isLoading: true });
 				const client = await LinuxDoClient.create();
 				try {
 					await client.get_session_csrf();
 				} catch (e) {
 					console.error("ERROR: When load_session_csrf", e);
 				}
-				set({ client: client });
-				return client;
+				set({ client: client, isLoading: false });
 			},
 		}),
 		{

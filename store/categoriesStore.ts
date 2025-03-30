@@ -20,13 +20,15 @@ export const useCategoriesStore = create<CategoriesState>()(
 			error: null,
 
 			init: async () => {
-				// Skip if we already have categories
-				if (get().categories.length > 0) return;
+				const { isLoading, categories, refresh } = get();
+				if (isLoading || categories.length > 0) return;
 
-				await get().refresh();
+				await refresh();
 			},
 
 			refresh: async () => {
+				if (get().isLoading) return;
+
 				const client = useLinuxDoClientStore.getState().client;
 				if (!client) return;
 

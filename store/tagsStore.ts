@@ -20,13 +20,15 @@ export const useTagsStore = create<TagsState>()(
 			error: null,
 
 			init: async () => {
-				// Skip if we already have tags
-				if (get().tags.length > 0) return;
+				const { isLoading, tags, refresh } = get();
+				if (isLoading || tags.length > 0) return;
 
-				await get().refresh();
+				await refresh();
 			},
 
 			refresh: async () => {
+				if (get().isLoading) return;
+
 				const client = useLinuxDoClientStore.getState().client;
 				if (!client) return;
 
