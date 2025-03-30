@@ -1,9 +1,7 @@
 import { formatDistanceToNow } from "date-fns";
-import { Image } from "expo-image";
 import { Eye, MessageCircle, Star } from "lucide-react-native";
 import { View } from "react-native";
 import { Text } from "~/components/ui/text";
-import { LINUXDO_CONST } from "~/constants/linuxDo";
 import type { GetTopic200 } from "~/lib/gen/api/discourseAPI/schemas/getTopic200";
 
 type TopicHeaderProps = {
@@ -20,25 +18,8 @@ export const TopicHeader = ({ topic }: TopicHeaderProps) => {
 		}
 	};
 
-	const getAvatarUrl = (template: string) => {
-		return template.startsWith("http") ? template.replace("{size}", "48") : `${LINUXDO_CONST.HTTPS_URL}${template.replace("{size}", "48")}`;
-	};
-
 	return (
 		<View className="p-4 bg-card">
-			{/* Author Info */}
-			<View className="flex-row items-center mb-4">
-				{topic.details?.created_by?.avatar_template && (
-					<Image source={{ uri: getAvatarUrl(topic.details.created_by.avatar_template) }} className="w-10 h-10 rounded-full mr-3" />
-				)}
-				<View>
-					<Text className="font-medium text-foreground">{topic.details?.created_by?.username || "Unknown"}</Text>
-					<Text className="text-xs text-muted-foreground">{formatDate(topic.created_at)}</Text>
-				</View>
-			</View>
-
-			{/* Title */}
-
 			{/* biome-ignore lint/suspicious/noExplicitAny: TODO */}
 			<Text className="text-xl font-bold mb-2 text-foreground">{(topic as any).unicode_title || topic.fancy_title || topic.title}</Text>
 
