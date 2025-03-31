@@ -2,12 +2,14 @@
 	"expo": {
 		"name": "luma",
 		"slug": "luma",
-		"version": "1.0.0",
+		"version": "0.1.0",
 		"orientation": "portrait",
-		"icon": "./assets/images/icon.png",
-		"scheme": "myapp",
+		"icon": "./assets/images/luma-icon.png",
+		"scheme": "luma",
 		"userInterfaceStyle": "automatic",
 		"newArchEnabled": true,
+		"githubUrl": "https://github.com/Yuhanawa/luma",
+		"platforms": ["ios", "android"],
 		"ios": {
 			"supportsTablet": true,
 			"infoPlist": {
@@ -16,23 +18,18 @@
 		},
 		"android": {
 			"adaptiveIcon": {
-				"foregroundImage": "./assets/images/adaptive-icon.png",
+				"foregroundImage": "./assets/images/luma-icon.png",
 				"backgroundColor": "#ffffff"
 			},
-			"package": "com.anonymous.luma"
-		},
-		"web": {
-			"bundler": "metro",
-			"output": "static",
-			"favicon": "./assets/images/favicon.png"
+			"package": "io.github.yuhanawa.luma"
 		},
 		"plugins": [
 			"expo-router",
 			[
 				"expo-splash-screen",
 				{
-					"image": "./assets/images/splash-icon.png",
-					"imageWidth": 200,
+					"image": "./assets/images/luma-icon@3x.png",
+					"imageWidth": 516,
 					"resizeMode": "contain",
 					"backgroundColor": "#ffffff"
 				}
@@ -40,6 +37,14 @@
 		],
 		"experiments": {
 			"typedRoutes": true
+		},
+		"extra": {
+			"router": {
+				"origin": false
+			},
+			"eas": {
+				"projectId": "8d57e4d3-fca7-413c-931c-d48b6eaafbee"
+			}
 		}
 	}
 }
