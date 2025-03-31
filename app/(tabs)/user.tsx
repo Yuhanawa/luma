@@ -52,7 +52,7 @@ export default function UserScreen() {
 		setIsNotificationsRefreshing(true);
 
 		const { notifications } = await client.getNotifications();
-		
+
 		setNotifications((notifications as NotificationItem[]) ?? []);
 		setIsNotificationsRefreshing(false);
 	}, [client, isNotificationsRefreshing]);
