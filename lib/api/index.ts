@@ -262,7 +262,7 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 				withCredentials: true,
 				headers: {
 					"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:137.0) Gecko/20100101 Firefox/137.0",
-					Accept: "application/json, text/plain, */*",
+					Accept: "application/json;q=0.9, text/plain;q=0.8, */*;q=0.5",
 					"Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
 					"X-Requested-With": "XMLHttpRequest",
 				},
