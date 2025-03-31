@@ -3,10 +3,10 @@ import { ScrollView, View } from "react-native";
 import { go2ActivityScreen } from "~/app/activityScreen";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import { useHistoryStore } from "~/store/historyStore";
+import { useActivityHistoryStore } from "~/store/activityHistoryStore";
 
 export function HistorySection() {
-	const { history } = useHistoryStore();
+	const { history } = useActivityHistoryStore();
 
 	if (history.length === 0) {
 		return null;

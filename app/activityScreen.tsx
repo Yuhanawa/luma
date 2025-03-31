@@ -7,67 +7,65 @@ import { HistorySection } from "~/components/history/HistorySection";
 import { type FlattenedTopicPanelProps, type TopicMethods, TopicPanel, type TopicPanelProps } from "~/components/topic/TopicPanel";
 import { TopicSkeleton } from "~/components/topic/TopicSkeleton";
 import { Text } from "~/components/ui/text";
-import { useHistoryStore } from "~/store/historyStore";
+import { useActivityHistoryStore } from "~/store/activityHistoryStore";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 const THRESHOLD = SCREEN_WIDTH * 0.3;
 const THRESHOLD_VERTICAL = SCREEN_HEIGHT * 0.2;
 
-type Direction = "top" | "bottom" | "left" | "right";
+export type Direction = "top" | "bottom" | "left" | "right";
 
 export type NumberToString<T> = {
 	[K in keyof T]: T[K] extends number ? string : T[K] extends object ? NumberToString<T[K]> : T[K];
 };
-type ActivityScreenParams =
+export type ActivityScreenBaseParams = NumberToString<FlattenedTopicPanelProps>;
+export type ActivityScreenParams =
 	| {
 			direction?: Direction;
 	  }
 	| ({
 			direction?: Direction;
-	  } & NumberToString<FlattenedTopicPanelProps>);
+	  } & ActivityScreenBaseParams);
 
 export function go2ActivityScreen(params?: ActivityScreenParams, title?: string) {
 	const router = useRouter();
-	const historyStore = useHistoryStore.getState();
+	const historyStore = useActivityHistoryStore.getState();
 
-	// Add to history if title is provided
-	if (title && params) {
-		historyStore.addToHistory({
-			title,
-			params,
-		});
-	}
+	if (params && title) historyStore.addToHistory(title, params as ActivityScreenBaseParams);
 
 	router.navigate(`/activityScreen?${new URLSearchParams({ direction: "bottom", ...params, auth: "go2ActivityScreen" }).toString()}`);
 }
 
 export default function ActivityScreen() {
 	const router = useRouter();
-	const params = useLocalSearchParams<
+	const localSearchparams = useLocalSearchParams<
 		ActivityScreenParams & {
 			auth: string;
 		}
 	>();
+	const direction = localSearchparams.direction;
 
+	const history = useActivityHistoryStore.getState().history;
+	const params: ActivityScreenBaseParams =
+		"listTopics" in localSearchparams || history.length === 0 ? (localSearchparams as ActivityScreenBaseParams) : history[0].params;
 	const listTopics = "listTopics" in params ? params.listTopics : undefined;
-	const direction = params.direction;
-	const [loaded, setLoaded] = useState(false);
 
+	const [loaded, setLoaded] = useState(false);
 	// Create appropriate shared values based on direction
 	const translateX = useSharedValue(0);
 	const translateY = useSharedValue(0);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: prevent content sudden change when switching to ActivityScreen for better UX
 	useEffect(() => {
-		if (params.auth !== "go2ActivityScreen")
+		if (localSearchparams.auth !== "go2ActivityScreen")
 			throw Error(
 				"Do not use router to navigate to this screen(ActivityScreen), use `go2ActivityScreen` instead to ensure correct parameters and type safety",
 			);
 
 		setLoaded(listTopics !== undefined);
 		return () => setLoaded(false);
-	}, [params]);
+	}, [localSearchparams]);
 
 	// Configure gesture based on direction
 	const backGesture = Gesture.Pan()
@@ -214,7 +212,6 @@ export default function ActivityScreen() {
 									params as ActivityScreenParams & {
 										listTopics: TopicMethods;
 									},
-									true,
 								)
 							) : (
 								<TopicSkeleton />
@@ -231,33 +228,10 @@ function getTopicPanel(
 	params: ActivityScreenParams & {
 		listTopics: TopicMethods;
 	},
-	addToHistory: boolean,
 ) {
 	let props = null;
 	if ("id" in params) props = { ...params, id: Number.parseInt(params.id) };
 	props ??= params;
-
-	// Add to history if needed
-	if (addToHistory) {
-		const historyStore = useHistoryStore.getState();
-		let title = "";
-
-		// Generate a title based on the params
-		if (params.listTopics === "listCategoryTopics" && "slug" in params) {
-			title = `Category: ${params.slug}`;
-		} else if (params.listTopics === "getTag" && "name" in params) {
-			title = `Tag: ${params.name}`;
-		} else if (params.listTopics === "listLatestTopics") {
-			title = "Latest Topics";
-		} else {
-			title = `${params.listTopics}`;
-		}
-
-		historyStore.addToHistory({
-			title,
-			params,
-		});
-	}
 
 	return <TopicPanel {...(props as TopicPanelProps)} />;
 }

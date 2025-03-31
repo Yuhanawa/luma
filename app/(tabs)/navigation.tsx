@@ -6,8 +6,8 @@ import { ScrollView, View } from "react-native";
 import { type NavigationItem, NavigationSection } from "~/components/navigation/NavigationSection";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
+import { useActivityHistoryStore } from "~/store/activityHistoryStore";
 import { useCategoriesStore } from "~/store/categoriesStore";
-import { useHistoryStore } from "~/store/historyStore";
 import { useTagsStore } from "~/store/tagsStore";
 import { go2ActivityScreen } from "../activityScreen";
 
@@ -23,7 +23,7 @@ export default function NavigationScreen() {
 	const router = useRouter();
 	const { categories, init: initCategories } = useCategoriesStore();
 	const { tags, init: initTags } = useTagsStore();
-	const { history } = useHistoryStore();
+	const { history } = useActivityHistoryStore();
 
 	useEffect(() => {
 		initCategories();

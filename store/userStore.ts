@@ -1,5 +1,6 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import type { GetUser200 } from "~/lib/gen/api/discourseAPI/schemas";
 import { useLinuxDoClientStore } from "./linuxDoClientStore";
 
@@ -254,6 +255,7 @@ interface UserState {
 	username: string;
 	userData: UserData;
 	isLoading: boolean;
+	isInited: boolean;
 	error: string | null;
 	init: () => Promise<void>;
 	refresh: () => Promise<void>;
@@ -263,33 +265,40 @@ export const useUserStore = create<UserState>()(
 	devtools(
 		persist(
 			(set, get) => ({
-				username: "User",
+				username: "",
 				userData: null,
 				isLoading: false,
+				isInited: false,
 				error: null,
 
 				init: async () => {
-					const { isLoading, userData, refresh } = get();
-					if (isLoading || userData !== null) return;
+					const { isLoading, isInited, username, refresh } = get();
+					if (isLoading || isInited) return;
+					set({ isInited: true });
 
 					const client = useLinuxDoClientStore.getState().client;
-					if (!client) return;
+					if (!client) throw Error("Client not initialized, pos: useUserStore init");
 
-					set({ username: client.getUsername() });
-					await refresh();
+					if (username === "") {
+						const username = client.getUsername();
+						if (username !== undefined) {
+							set({ username });
+							await refresh();
+						}
+					}
 
 					client.onUsernameChanged(async (username) => {
-						set({ username: username, userData: null });
+						set({ username, userData: null });
 						get().refresh();
 					});
 				},
 
 				refresh: async () => {
 					const { isLoading, username } = get();
-					if (isLoading) return;
+					if (isLoading || !username) return;
 
 					const client = useLinuxDoClientStore.getState().client;
-					if (!client) return;
+					if (!client) throw Error("Client not initialized, pos: useUserStore refresh");
 
 					set({ username: username, userData: null, isLoading: true, error: null });
 					try {
@@ -310,6 +319,8 @@ export const useUserStore = create<UserState>()(
 			}),
 			{
 				name: "user-storage",
+				storage: createJSONStorage(() => AsyncStorage),
+				partialize: (state) => ({ username: state.username, userData: state.userData }),
 			},
 		),
 		{
