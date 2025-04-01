@@ -4,7 +4,7 @@
 		"slug": "luma",
 		"version": "0.1.0",
 		"orientation": "portrait",
-		"icon": "./assets/images/luma-icon.png",
+		"icon": "./assets/images/luma-icon-128x.png",
 		"scheme": "luma",
 		"userInterfaceStyle": "automatic",
 		"newArchEnabled": true,
@@ -13,12 +13,12 @@
 		"ios": {
 			"supportsTablet": true,
 			"infoPlist": {
-				"LSApplicationQueriesSchemes": ["https", "http"]
+				"LSApplicationQueriesSchemes": ["https", "http", "https", "http"]
 			}
 		},
 		"android": {
 			"adaptiveIcon": {
-				"foregroundImage": "./assets/images/luma-icon.png",
+				"foregroundImage": "./assets/images/luma-icon-128x.png",
 				"backgroundColor": "#ffffff"
 			},
 			"package": "io.github.yuhanawa.luma"
@@ -28,8 +28,8 @@
 			[
 				"expo-splash-screen",
 				{
-					"image": "./assets/images/luma-icon@3x.png",
-					"imageWidth": 516,
+					"image": "./assets/images/luma-icon-512x.png",
+					"imageWidth": 512,
 					"resizeMode": "contain",
 					"backgroundColor": "#ffffff"
 				}
@@ -45,6 +45,12 @@
 			"eas": {
 				"projectId": "8d57e4d3-fca7-413c-931c-d48b6eaafbee"
 			}
+		},
+		"runtimeVersion": {
+			"policy": "appVersion"
+		},
+		"updates": {
+			"url": "https://u.expo.dev/8d57e4d3-fca7-413c-931c-d48b6eaafbee"
 		}
 	}
 }
