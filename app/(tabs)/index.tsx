@@ -62,7 +62,8 @@ export default function HomeScreen() {
 			initialLayout={{ width: layout.width }}
 			renderTabBar={renderTabBar}
 			swipeEnabled={true}
-			lazy={false}
+			lazy={true}
+			lazyPreloadDistance={1}
 		/>
 	);
 }
