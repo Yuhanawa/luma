@@ -4,7 +4,7 @@
 		"slug": "luma",
 		"version": "0.1.0",
 		"orientation": "portrait",
-		"icon": "./assets/images/luma-icon-128x.png",
+		"icon": "./assets/images/luma-icon-512x.png",
 		"scheme": "luma",
 		"userInterfaceStyle": "automatic",
 		"newArchEnabled": true,
@@ -18,7 +18,7 @@
 		},
 		"android": {
 			"adaptiveIcon": {
-				"foregroundImage": "./assets/images/luma-icon-128x.png",
+				"foregroundImage": "./assets/images/luma-icon-512x.png",
 				"backgroundColor": "#ffffff"
 			},
 			"package": "io.github.yuhanawa.luma"
