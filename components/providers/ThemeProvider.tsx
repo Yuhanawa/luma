@@ -26,7 +26,7 @@ export function ThemeProvider({ children, nativeThemeProviderValue, ...rest }: C
 	return (
 		<NativeThemeProvider value={nativeThemeProviderValue ?? (nativeColorScheme === "dark" ? DarkTheme : DefaultTheme)}>
 			<ThemeContext.Provider value={colorThemeStore}>
-				<View style={themeStyle} className="flex-1" {...rest}>
+				<View style={themeStyle} className="flex-1 bg-transparent" {...rest}>
 					{children}
 				</View>
 			</ThemeContext.Provider>
