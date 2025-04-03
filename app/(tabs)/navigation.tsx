@@ -41,14 +41,12 @@ export default function NavigationScreen() {
 				title="热门分类"
 				items={categories}
 				onItemPress={(item) =>
-					navigate(
-						{
-							listTopics: "listCategoryTopics",
-							id: String(item.data.id),
-							slug: item.data.slug,
-						},
-						`Category: ${item.text}`,
-					)
+					navigate({
+						listTopics: "listCategoryTopics",
+						id: String(item.data.id),
+						slug: item.data.slug,
+						title: `Category: ${item.text}`,
+					})
 				}
 				onViewMore={() => router.navigate("/categories")}
 				delay={100}
@@ -58,13 +56,11 @@ export default function NavigationScreen() {
 				title="热门标签"
 				items={tags}
 				onItemPress={(item) =>
-					navigate(
-						{
-							listTopics: "getTag",
-							name: item.text,
-						},
-						`Tag: ${item.text}`,
-					)
+					navigate({
+						listTopics: "getTag",
+						name: item.text,
+						title: `Tag: ${item.text}`,
+					})
 				}
 				onViewMore={() => router.navigate("/tags")}
 				delay={200}
@@ -91,7 +87,7 @@ export default function NavigationScreen() {
 								variant="outline"
 								size="sm"
 								className="flex-1 min-w-[45%]"
-								onPress={() => navigate(item.params, item.title)}
+								onPress={() => navigate({ ...item.params, title: item.title })}
 							>
 								<Text className="text-sm" numberOfLines={1}>
 									{item.title}
