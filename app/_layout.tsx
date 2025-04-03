@@ -1,5 +1,6 @@
 import "../lib/i18n";
 import "../global.css";
+import "react-native-get-random-values";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { I18nextProvider } from "react-i18next";
