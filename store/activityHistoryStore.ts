@@ -28,12 +28,7 @@ export const useActivityHistoryStore = create<ActivityHistoryState>()(
 					const newItem: ActivityHistoryItem = { title, params, id: getIdFromParams(params), timestamp: Date.now() };
 
 					set((state) => {
-						let newHistory = [
-							newItem,
-							...state.history.filter((i) => {
-								i.id !== newItem.id;
-							}),
-						];
+						let newHistory = [newItem, ...state.history.filter((i) => i.id !== newItem.id)];
 
 						if (newHistory.length > 10) newHistory = newHistory.slice(0, 10);
 
@@ -55,7 +50,7 @@ export const useActivityHistoryStore = create<ActivityHistoryState>()(
 	),
 );
 
-function getIdFromParams(params: ActivityScreenBaseParams): string {
+export function getIdFromParams(params: ActivityScreenBaseParams): string {
 	if (params.listTopics === "listLatestTopics" || params.listTopics === "listUnreadTopics") return `common-${params.listTopics}`;
 	if (params.listTopics === "listCategoryTopics") return `category-${params.id}-${params.slug}`;
 	if (params.listTopics === "getTag") return `tag-${params.name}`;
