@@ -9,7 +9,7 @@ import { Text } from "~/components/ui/text";
 import { useActivityHistoryStore } from "~/store/activityHistoryStore";
 import { useCategoriesStore } from "~/store/categoriesStore";
 import { useTagsStore } from "~/store/tagsStore";
-import { go2ActivityScreen } from "../activityScreen";
+import { useActivityNavigation } from "../activityScreen";
 
 // Mock data for external links
 export const EXTERNAL_LINKS: NavigationItem<string>[] = [
@@ -24,6 +24,7 @@ export default function NavigationScreen() {
 	const { categories, init: initCategories } = useCategoriesStore();
 	const { tags, init: initTags } = useTagsStore();
 	const { history } = useActivityHistoryStore();
+	const { navigate } = useActivityNavigation();
 
 	useEffect(() => {
 		initCategories();
@@ -40,7 +41,7 @@ export default function NavigationScreen() {
 				title="热门分类"
 				items={categories}
 				onItemPress={(item) =>
-					go2ActivityScreen(
+					navigate(
 						{
 							listTopics: "listCategoryTopics",
 							id: String(item.data.id),
@@ -57,7 +58,7 @@ export default function NavigationScreen() {
 				title="热门标签"
 				items={tags}
 				onItemPress={(item) =>
-					go2ActivityScreen(
+					navigate(
 						{
 							listTopics: "getTag",
 							name: item.text,
@@ -90,7 +91,7 @@ export default function NavigationScreen() {
 								variant="outline"
 								size="sm"
 								className="flex-1 min-w-[45%]"
-								onPress={() => go2ActivityScreen(item.params, item.title)}
+								onPress={() => navigate(item.params, item.title)}
 							>
 								<Text className="text-sm" numberOfLines={1}>
 									{item.title}

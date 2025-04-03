@@ -4,10 +4,11 @@ import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationList } from "~/components/navigation/NavigationList";
 import { useTagsStore } from "~/store/tagsStore";
-import { go2ActivityScreen } from "../activityScreen";
+import { useActivityNavigation } from "../activityScreen";
 
 export default function TagsScreen() {
 	const { tags, init } = useTagsStore();
+	const { navigate } = useActivityNavigation();
 
 	useEffect(() => {
 		init();
@@ -36,13 +37,11 @@ export default function TagsScreen() {
 				items={tagItems}
 				onItemPress={(item) => {
 					const tag = item.data;
-					go2ActivityScreen(
-						{
-							listTopics: "getTag",
-							name: tag.text,
-						},
-						`Tag: ${tag.text}`,
-					);
+					navigate({
+						listTopics: "getTag",
+						name: tag.text,
+						title: `Tag: ${tag.text}`,
+					});
 				}}
 			/>
 		</SafeAreaView>

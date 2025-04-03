@@ -4,10 +4,11 @@ import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationList } from "~/components/navigation/NavigationList";
 import { useCategoriesStore } from "~/store/categoriesStore";
-import { go2ActivityScreen } from "../activityScreen";
+import { useActivityNavigation } from "../activityScreen";
 
 export default function CategoriesScreen() {
 	const { categories, init } = useCategoriesStore();
+	const { navigate } = useActivityNavigation();
 
 	useEffect(() => {
 		init();
@@ -37,14 +38,12 @@ export default function CategoriesScreen() {
 				items={categoryItems}
 				onItemPress={(item) => {
 					const category = item.data;
-					go2ActivityScreen(
-						{
-							listTopics: "listCategoryTopics",
-							id: String(category.data.id),
-							slug: category.data.slug,
-						},
-						`Category: ${category.text}`,
-					);
+					navigate({
+						listTopics: "listCategoryTopics",
+						id: String(category.data.id),
+						slug: category.data.slug,
+						title: `Category: ${category.text}`,
+					});
 				}}
 			/>
 		</SafeAreaView>

@@ -57,6 +57,13 @@ export default function RootLayout() {
 			<Providers>
 				<Stack>
 					<Stack.Screen name="(tabs)" options={{ headerShown: false, headerTitle: "Luma" }} />
+					<Stack.Screen
+						options={{
+							headerShown: false,
+							presentation: "transparentModal",
+						}}
+						name="activityScreen"
+					/>
 					<Stack.Screen name="+not-found" />
 				</Stack>
 			</Providers>
