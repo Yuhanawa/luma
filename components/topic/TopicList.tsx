@@ -2,7 +2,7 @@ import { FlashList } from "@shopify/flash-list";
 import { BookmarkIcon, Filter, MessageSquare, RefreshCw, TrendingUp } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, RefreshControl, Text, View } from "react-native";
 import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated";
 import { ErrorRetry } from "../ErrorRetry";
 import type { SwipeAction } from "../SwipeableWrapper";
@@ -13,6 +13,7 @@ type TopicListProps = {
 	initialItems?: TopicCardItem[];
 	onPress?: (id: number) => void;
 	onRefresh?: () => Promise<void>;
+	disablePull2Refresh?: boolean;
 	hasMore?: boolean | (() => boolean);
 	onLoadMore?: () => Promise<void>;
 	emptyStateMessage?: string;
@@ -24,6 +25,7 @@ type TopicListProps = {
 export const TopicList = ({
 	initialItems = [],
 	onRefresh,
+	disablePull2Refresh,
 	hasMore,
 	onLoadMore,
 	emptyStateMessage = "No topics to display",
@@ -156,9 +158,11 @@ export const TopicList = ({
 						</Text>
 					</Pressable> */}
 
-					<Pressable className="p-2 rounded-full" onPress={handleRefresh}>
-						<RefreshCw size={16} color={isDark ? "#E5E7EB" : "#6B7280"} />
-					</Pressable>
+					{onRefresh && (
+						<Pressable className="p-2 rounded-full" onPress={handleRefresh}>
+							<RefreshCw size={16} color={isDark ? "#E5E7EB" : "#6B7280"} />
+						</Pressable>
+					)}
 				</View>
 			</View>
 
@@ -170,8 +174,12 @@ export const TopicList = ({
 					keyExtractor={(item) => item.id?.toString() || item.slug || item.title || "MISSING_KEY"}
 					contentContainerStyle={{ padding: 16 }}
 					showsVerticalScrollIndicator={false}
-					onRefresh={onRefresh ? handleRefresh : undefined}
-					refreshing={refreshing}
+					{...(onRefresh
+						? {
+								onRefresh: disablePull2Refresh ? undefined : handleRefresh,
+								refreshing: refreshing,
+							}
+						: {})}
 					onEndReached={handleLoadMore}
 					onEndReachedThreshold={0.5}
 					onMomentumScrollBegin={() => {

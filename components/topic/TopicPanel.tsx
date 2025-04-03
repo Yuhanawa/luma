@@ -25,11 +25,15 @@ export type CategoryTopicPanelProps = {
 
 export type TopicPanelProps = CommonTopicPanelProps | TagTopicPanelProps | CategoryTopicPanelProps;
 
-type FlattenParams<T> = T extends { params: infer P } ? Omit<T, "params"> & P : T;
+export type FlattenParams<T> = T extends { params: infer P } ? Omit<T, "params"> & P : T;
 export type FlattenedTopicPanelProps = FlattenParams<TopicPanelProps>;
 export type WithTopicPanelComponentProps<T> = T & {
 	title?: string;
+	initialItems?: TopicCardItem[] | undefined;
+	onItemsChange?: (items: TopicCardItem[]) => void;
 	swipe?: SwipeAction<TopicCardItem>[];
+	disableRefresh?: boolean;
+	disablePull2Refresh?: boolean;
 };
 export type TopicPanelComponentProps = WithTopicPanelComponentProps<TopicPanelProps>;
 
@@ -39,15 +43,23 @@ export function TopicPanel(props: TopicPanelComponentProps) {
 	const client = useLinuxDoClientStore().client!;
 	const router = useRouter();
 
-	const [topicItems, setTopicItems] = useState<TopicCardItem[] | undefined>(undefined);
-	const [page, setPage] = useState(0);
+	const [topicItems, setTopicItems] = useState<TopicCardItem[] | undefined>(props.initialItems);
 	const [loadMoreUrl, setLoadMoreUrl] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasMore, setHasMore] = useState(true);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only run once
 	useEffect(() => {
-		handleRefresh();
+		if (topicItems === undefined) handleRefresh();
 	}, []);
+
+	// Only call onItemsChange when topicItems changes and is not undefined
+	useEffect(() => {
+		// Skip the initial render when topicItems is set from props.initialItems
+		if (topicItems !== undefined && topicItems !== props.initialItems) {
+			props.onItemsChange?.(topicItems);
+		}
+	}, [topicItems, props.onItemsChange, props.initialItems]);
 
 	const handleRefresh = useCallback(async () => {
 		if (isLoading) return; // Prevent multiple simultaneous calls
@@ -58,11 +70,11 @@ export function TopicPanel(props: TopicPanelComponentProps) {
 			let topics: Awaited<ReturnType<LinuxDoClient["listLatestTopics" | "listUnreadTopics" | "getTag" | "listCategoryTopics"]>>;
 			if (listTopics === "listLatestTopics" || listTopics === "listUnreadTopics")
 				topics = await (client[listTopics] as () => ReturnType<LinuxDoClient["listLatestTopics" | "listUnreadTopics"]>)();
-			// biome-ignore lint/suspicious/noExplicitAny: I don't know how to make it perfect
-			else topics = await client[listTopics]((props as any).params);
+			else if (listTopics === "listCategoryTopics") topics = await client[listTopics](props.params);
+			else if (listTopics === "getTag") topics = await client[listTopics](props.params);
+			else throw Error("TopicPanel(handleRefresh): Invalid listTopics");
 
 			setTopicItems(topics.topic_list?.topics as TopicCardItem[]);
-			setPage(1);
 			const moreUrl = client.getLoadMoreTopicsUrl(topics as { topic_list?: { more_topics_url?: string } });
 			setLoadMoreUrl(moreUrl);
 			setHasMore(moreUrl !== null);
@@ -78,11 +90,8 @@ export function TopicPanel(props: TopicPanelComponentProps) {
 
 		try {
 			setIsLoading(true);
-			const nextPage = page + 1;
-			console.log("Loading more topics, page:", nextPage);
-
+			console.log("TopicPanel: Load more topics, URL:", loadMoreUrl);
 			const topics = await client.loadMoreTopics(loadMoreUrl!);
-			console.log("Loaded more topics:", topics);
 
 			const newTopics = topics?.topic_list?.topics;
 			if (topics === null || !newTopics?.length) {
@@ -102,9 +111,7 @@ export function TopicPanel(props: TopicPanelComponentProps) {
 
 				return [...prev, ...uniqueNewTopics];
 			});
-			setPage(nextPage);
 			const moreUrl = client.getLoadMoreTopicsUrl(topics);
-			console.log("More topics URL:", moreUrl);
 			setLoadMoreUrl(moreUrl);
 			setHasMore(moreUrl !== null);
 		} catch (error) {
@@ -113,12 +120,13 @@ export function TopicPanel(props: TopicPanelComponentProps) {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [client, page, isLoading, hasMore, topicItems, loadMoreUrl]);
+	}, [client, isLoading, hasMore, topicItems, loadMoreUrl]);
 
 	return topicItems !== undefined ? (
 		<TopicList
 			initialItems={topicItems}
-			onRefresh={handleRefresh}
+			onRefresh={props.disableRefresh ? undefined : handleRefresh}
+			disablePull2Refresh={props.disablePull2Refresh}
 			onLoadMore={handleLoadMore}
 			hasMore={hasMore}
 			title={props.title}
