@@ -1,5 +1,5 @@
 import { FlashList } from "@shopify/flash-list";
-import { type ComponentType, type JSXElementConstructor, type ReactElement, useCallback } from "react";
+import { type ComponentType, type JSXElementConstructor, type ReactElement, useCallback, useEffect } from "react";
 import { View } from "react-native";
 import type { GetTopic200PostStreamPostsItem } from "~/lib/gen/api/discourseAPI/schemas/getTopic200PostStreamPostsItem";
 import { PostItem } from "./PostItem";
@@ -18,10 +18,15 @@ type PostListProps = {
 
 export const PostList = ({ posts, onReply, onLike, renderMore, onLoadMore, onRefresh, isLoading, ListHeaderComponent }: PostListProps) => {
 	const renderItem = useCallback(
-		({ item }: { item: GetTopic200PostStreamPostsItem }) => (
-			<PostItem post={item} onReply={onReply} onLike={onLike} renderMore={renderMore} />
-		),
-		[onReply, onLike, renderMore],
+		({ item }: { item: GetTopic200PostStreamPostsItem }) => {
+			// Find the post being replied to if reply_to_post_number exists
+			let replyToPost = null;
+			if (item.reply_to_post_number) {
+				replyToPost = posts.find((p) => p.post_number === Number(item.reply_to_post_number));
+			}
+			return <PostItem key={item.id} post={item} replyToPost={replyToPost} onReply={onReply} onLike={onLike} renderMore={renderMore} />;
+		},
+		[posts, onReply, onLike, renderMore],
 	);
 
 	return (

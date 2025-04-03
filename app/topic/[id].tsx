@@ -1,28 +1,40 @@
 import { useLocalSearchParams } from "expo-router";
 import { Stack } from "expo-router";
-import { Bookmark, Bug, Cat, Dog, HeartIcon } from "lucide-react-native";
+import { Bookmark, Bug, Cat, Dog, Send } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
-import { Alert, Pressable, Share, View } from "react-native";
+import { Alert, Keyboard, Pressable, Share, View } from "react-native";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PostList } from "~/components/topic/PostList";
+import { ReplyInput } from "~/components/topic/ReplyInput";
 import { TopicHeader } from "~/components/topic/TopicHeader";
 import { TopicNavBar } from "~/components/topic/TopicNavBar";
 import { TopicDetailSkeleton } from "~/components/topic/TopicSkeleton";
 import { Text } from "~/components/ui/text";
+import { LINUXDO_CONST } from "~/constants/linuxDo";
 import type { GetTopic200 } from "~/lib/gen/api/discourseAPI/schemas/getTopic200";
 import type { GetTopic200PostStreamPostsItem } from "~/lib/gen/api/discourseAPI/schemas/getTopic200PostStreamPostsItem";
+import { usePostsCache } from "~/store/cacheStore";
 import { useLinuxDoClientStore } from "~/store/linuxDoClientStore";
 
 export default function TopicScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const client = useLinuxDoClientStore().client!;
-	const [topic, setTopic] = useState<GetTopic200>();
+	const [topic, setTopic] = useState<GetTopic200 | undefined>(undefined);
 	const [isLoading, setIsLoading] = useState(true);
+	const [replyInputVisible, setReplyInputVisible] = useState(false);
+	const [replyingToPost, setReplyingToPost] = useState<GetTopic200PostStreamPostsItem | null>(null);
+
+	const postsCache = usePostsCache();
+
+	useEffect(() => {
+		if (topic) postsCache.set(id, topic);
+	}, [topic, postsCache.set, id]);
 
 	const loadTopic = useCallback(async () => {
 		try {
 			setIsLoading(true);
-			const response = await client.getTopic({ id: id });
+			const response = postsCache.get(id) ?? (await client.getTopic({ id: id }));
 			setTopic(response);
 		} catch (error) {
 			console.error("Error loading topic:", error);
@@ -30,7 +42,7 @@ export default function TopicScreen() {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [id, client]);
+	}, [id, client, postsCache.get]);
 
 	useEffect(() => {
 		loadTopic();
@@ -46,12 +58,14 @@ export default function TopicScreen() {
 	}, []);
 
 	const handleReply = useCallback((post: GetTopic200PostStreamPostsItem) => {
-		// TODO: Implement reply
-		console.log("Reply to post:", post.id);
+		setReplyingToPost(post);
+		setReplyInputVisible(true);
+		Keyboard.dismiss(); // Dismiss any active keyboard
 	}, []);
 
 	const handleLike = useCallback((post: GetTopic200PostStreamPostsItem) => {
 		// TODO: Implement like
+		Alert.alert(`Thanks for your like! I know you liked this post (${post.id}), but don't like it yet, because it's not implemented yet.`);
 		console.log("Like post:", post.id);
 	}, []);
 
@@ -121,10 +135,41 @@ export default function TopicScreen() {
 		[handleBookmark],
 	);
 
+	// Handle submitting a reply
+	const handleSubmitReply = useCallback(
+		async (content: string, replyToPostId?: number) => {
+			try {
+				const response = await client.createTopicPostPM({
+					raw: content,
+					...(replyToPostId
+						? {
+								reply_to_post_number: replyToPostId,
+							}
+						: {
+								topic_id: Number.parseInt(id),
+							}),
+				});
+				console.log("Submitting reply:", { content, replyToPostId, topicId: id, response });
+				// After successful submission, reload the topic to show the new reply
+				await loadTopic();
+			} catch (error) {
+				console.error("Error submitting reply:", error);
+				Alert.alert("Error", "Failed to submit reply");
+			}
+		},
+		[id, loadTopic, client],
+	);
+
+	// Close the reply input
+	const handleCloseReplyInput = useCallback(() => {
+		setReplyInputVisible(false);
+		setReplyingToPost(null);
+	}, []);
+
 	const handleShare = useCallback(() => {
 		if (topic) {
 			Share.share({
-				message: `${topic.title}\nhttps://linux.do/t/${topic.id}`,
+				message: `${topic.title}\n${LINUXDO_CONST.HTTPS_URL}/t/${topic.id}`,
 				title: topic.title,
 			});
 		}
@@ -144,15 +189,34 @@ export default function TopicScreen() {
 	return (
 		<>
 			<TopicNavBar topic={topic} onShare={handleShare} />
-			<PostList
-				ListHeaderComponent={<TopicHeader topic={topic} />}
-				posts={topic.post_stream.posts}
-				onReply={handleReply}
-				onLike={handleLike}
-				renderMore={renderMore}
-				onRefresh={loadTopic}
-				isLoading={isLoading}
-			/>
+			<View className="flex-1 relative">
+				<PostList
+					ListHeaderComponent={<TopicHeader topic={topic} />}
+					posts={topic.post_stream.posts}
+					onReply={handleReply}
+					onLike={handleLike}
+					renderMore={renderMore}
+					onRefresh={loadTopic}
+					isLoading={isLoading}
+				/>
+
+				{/* Reply to topic button */}
+				<Animated.View entering={FadeIn.delay(500).duration(400)} className="absolute bottom-4 right-4">
+					<Pressable
+						onPress={() => {
+							setReplyingToPost(null);
+							setReplyInputVisible(true);
+						}}
+						className="bg-primary rounded-full px-5 py-3 shadow-lg flex-row items-center"
+					>
+						<Text className="text-primary-foreground font-medium mr-2">Reply to Topic</Text>
+						<Send size={16} className="text-primary-foreground" />
+					</Pressable>
+				</Animated.View>
+
+				{/* Reply input component */}
+				<ReplyInput visible={replyInputVisible} replyingTo={replyingToPost} onClose={handleCloseReplyInput} onSubmit={handleSubmitReply} />
+			</View>
 		</>
 	);
 }
