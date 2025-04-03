@@ -30,7 +30,7 @@ export const useLinuxDoClientStore = create<LinuxDoClientState>()(
 			},
 		}),
 		{
-			name: "LinuxDoClient-storage",
+			name: "LinuxDoClient-store",
 		},
 	),
 );
