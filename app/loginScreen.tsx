@@ -6,7 +6,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Text } from "~/components/ui/text";
 import { LINUXDO_CONST } from "~/constants/linuxDo";
-import { saveCookieJar } from "~/lib/cookieManager";
+import CookieManager from "~/lib/cookieManager";
 
 export default function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 	const { t } = useTranslation();
@@ -25,8 +25,16 @@ export default function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 		);
 		const serializedCookieJar = cookieJar.serializeSync();
 		if (serializedCookieJar !== undefined) {
-			saveCookieJar(serializedCookieJar);
-			onSuccess();
+			const cookieManager = new CookieManager();
+			cookieManager.switchNewCookieBox();
+			cookieManager
+				.setCurrentCookieJar(serializedCookieJar)
+				.then(() => {
+					onSuccess();
+				})
+				.catch((error) => {
+					throw Error("Failed to save cookie jar", error);
+				});
 		} else {
 			console.error("Unknown Error: serializedCookieJar is undefined");
 		}

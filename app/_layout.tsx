@@ -10,7 +10,7 @@ import Animated, { FadeIn, FadeInRight, ReanimatedLogLevel, configureReanimatedL
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ImageViewerProvider } from "~/components/providers/ImageViewerProvider";
 import { ThemeProvider } from "~/components/providers/ThemeProvider";
-import { checkCookie, loadCookieJar } from "~/lib/cookieManager";
+import CookieManager from "~/lib/cookieManager";
 import { initIconWithClassName } from "~/lib/icons";
 import i18n from "../lib/i18n";
 import LoginScreen from "./loginScreen";
@@ -29,11 +29,16 @@ export default function RootLayout() {
 	const [isLogin, setIsLogin] = useState<boolean | undefined>(undefined);
 
 	useEffect(() => {
-		loadCookieJar().then((cookieJar) => {
-			checkCookie(cookieJar).then((checked) => {
-				setIsLogin(checked);
-				setLoading(false);
-			});
+		const cookieManager = new CookieManager();
+		const cookieJar = cookieManager.getCurrentCookieJar();
+		if (cookieJar === null) {
+			setIsLogin(false);
+			setLoading(false);
+			return;
+		}
+		CookieManager.checkCookie(cookieJar).then((checked) => {
+			setIsLogin(checked);
+			setLoading(false);
 		});
 	}, []);
 

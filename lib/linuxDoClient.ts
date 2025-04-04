@@ -1,16 +1,23 @@
 import type { AxiosRequestConfig } from "axios";
+import type { SerializedCookieJar } from "tough-cookie";
 import DiscourseAPI from "./api";
-import { checkCookie, loadCookieJar, saveCookieJar } from "./cookieManager";
+import CookieManager from "./cookieManager";
 import type { ListLatestTopics200 } from "./gen/api/discourseAPI/schemas";
 
 export default class LinuxDoClient extends DiscourseAPI {
-	static async create(): Promise<LinuxDoClient> {
-		const cookieJar = await loadCookieJar();
-		if (!(await checkCookie(cookieJar))) throw new Error("Cookie check failed: `_t` cookie not found");
+	cookieManager: CookieManager | null = null;
+	static async create(cookieManager?: CookieManager): Promise<LinuxDoClient> {
+		// biome-ignore lint/style/noParameterAssign: <explanation>
+		cookieManager ??= new CookieManager();
+		const cookieJar = cookieManager.getCurrentCookieJar()!;
+		if (!(await CookieManager.checkCookie(cookieJar))) throw new Error("Cookie check failed: `_t` cookie not found");
 		const client = new LinuxDoClient("https://linux.do", {
 			initialCookie: cookieJar,
 		});
-		client.onCookieChanged(saveCookieJar);
+		client.cookieManager = cookieManager;
+		client.onCookieChanged((cookieJar: SerializedCookieJar) => {
+			client.cookieManager!.setCurrentCookieJar(cookieJar, client.getUsername() ?? undefined);
+		});
 		return client;
 	}
 
