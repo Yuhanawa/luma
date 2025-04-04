@@ -251,9 +251,12 @@ type UserData =
 	  })
 	| null;
 
+const ONE_DAY = 1000 * 60 * 60 * 24;
+
 interface UserState {
 	username: string;
 	userData: UserData;
+	updateTime: number;
 	isLoading: boolean;
 	isInited: boolean;
 	error: string | null;
@@ -267,12 +270,13 @@ export const useUserStore = create<UserState>()(
 			(set, get) => ({
 				username: "",
 				userData: null,
+				updateTime: 0,
 				isLoading: false,
 				isInited: false,
 				error: null,
 
 				init: async () => {
-					const { isLoading, isInited, username, refresh } = get();
+					const { isLoading, isInited, username, userData, updateTime, refresh } = get();
 					if (isLoading || isInited) return;
 					set({ isInited: true });
 
@@ -285,6 +289,8 @@ export const useUserStore = create<UserState>()(
 							set({ username });
 							await refresh();
 						}
+					} else {
+						if (userData === null || Date.now() - updateTime > ONE_DAY) await refresh();
 					}
 
 					client.onUsernameChanged(async (username) => {
@@ -306,6 +312,7 @@ export const useUserStore = create<UserState>()(
 						set({
 							username,
 							userData,
+							updateTime: Date.now(),
 							isLoading: false,
 						});
 					} catch (e) {
@@ -320,7 +327,7 @@ export const useUserStore = create<UserState>()(
 			{
 				name: "user-storage",
 				storage: createJSONStorage(() => AsyncStorage),
-				partialize: (state) => ({ username: state.username, userData: state.userData }),
+				partialize: (state) => ({ username: state.username, userData: state.userData, updateTime: state.updateTime }),
 			},
 		),
 		{
