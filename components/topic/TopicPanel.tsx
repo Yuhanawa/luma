@@ -56,10 +56,10 @@ export function TopicPanel(props: TopicPanelComponentProps) {
 	// Only call onItemsChange when topicItems changes and is not undefined
 	useEffect(() => {
 		// Skip the initial render when topicItems is set from props.initialItems
-		if (topicItems !== undefined && topicItems !== props.initialItems) {
+		if (topicItems !== undefined) {
 			props.onItemsChange?.(topicItems);
 		}
-	}, [topicItems, props.onItemsChange, props.initialItems]);
+	}, [topicItems, props.onItemsChange]);
 
 	const handleRefresh = useCallback(async () => {
 		if (isLoading) return; // Prevent multiple simultaneous calls

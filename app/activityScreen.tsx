@@ -28,8 +28,6 @@ import {
 } from "~/components/topic/TopicPanel";
 import { TopicSkeleton } from "~/components/topic/TopicSkeleton";
 import { Text } from "~/components/ui/text";
-// Import only what's needed
-import "~/lib/cacheStore";
 import { getIdFromParams, useActivityHistoryStore } from "~/store/activityHistoryStore";
 import { useTopicsCache } from "~/store/cacheStore";
 
