@@ -1,6 +1,7 @@
 import "../lib/i18n";
 import "../global.css";
 import "react-native-get-random-values";
+import { PortalHost } from "@rn-primitives/portal";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { I18nextProvider } from "react-i18next";
@@ -10,8 +11,8 @@ import Animated, { FadeIn, FadeInRight, ReanimatedLogLevel, configureReanimatedL
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ImageViewerProvider } from "~/components/providers/ImageViewerProvider";
 import { ThemeProvider } from "~/components/providers/ThemeProvider";
-import CookieManager from "~/lib/cookieManager";
 import { initIconWithClassName } from "~/lib/icons";
+import { useAuthStore } from "~/store/authStore";
 import i18n from "../lib/i18n";
 import LoginScreen from "./loginScreen";
 
@@ -26,39 +27,37 @@ function init() {
 
 export default function RootLayout() {
 	const [loading, setLoading] = useState(true);
-	const [isLogin, setIsLogin] = useState<boolean | undefined>(undefined);
+	const { isLoggedIn, isLoading: authLoading, init: initAuth } = useAuthStore();
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only run once
 	useEffect(() => {
-		const cookieManager = new CookieManager();
-		const cookieJar = cookieManager.getCurrentCookieJar();
-		if (cookieJar === null) {
-			setIsLogin(false);
-			setLoading(false);
-			return;
-		}
-		CookieManager.checkCookie(cookieJar).then((checked) => {
-			setIsLogin(checked);
+		// Initialize the app
+		init();
+
+		// Initialize the auth store
+		initAuth().then(() => {
 			setLoading(false);
 		});
 	}, []);
 
-	useEffect(init, []);
-
-	if (loading) {
+	if (loading || authLoading) {
 		return (
 			<ThemeProvider>
 				<SimpleText>Loading... </SimpleText>
 			</ThemeProvider>
 		);
 	}
-	if (isLogin === false) {
+
+	if (isLoggedIn === false) {
 		return (
 			<Providers>
-				<LoginScreen onSuccess={() => setIsLogin(true)} />
+				<LoginScreen />
+				<PortalHost />
 			</Providers>
 		);
 	}
-	if (isLogin === true) {
+
+	if (isLoggedIn === true) {
 		return (
 			<Providers>
 				<Stack>
@@ -72,9 +71,11 @@ export default function RootLayout() {
 					/>
 					<Stack.Screen name="+not-found" />
 				</Stack>
+				<PortalHost />
 			</Providers>
 		);
 	}
+
 	return (
 		<ThemeProvider>
 			<SimpleText>Failed to Load </SimpleText>

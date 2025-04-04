@@ -5,7 +5,6 @@ import CookieManager from "./cookieManager";
 import type { ListLatestTopics200 } from "./gen/api/discourseAPI/schemas";
 
 export default class LinuxDoClient extends DiscourseAPI {
-	cookieManager: CookieManager | null = null;
 	static async create(cookieManager?: CookieManager): Promise<LinuxDoClient> {
 		// biome-ignore lint/style/noParameterAssign: <explanation>
 		cookieManager ??= new CookieManager();
@@ -14,9 +13,8 @@ export default class LinuxDoClient extends DiscourseAPI {
 		const client = new LinuxDoClient("https://linux.do", {
 			initialCookie: cookieJar,
 		});
-		client.cookieManager = cookieManager;
 		client.onCookieChanged((cookieJar: SerializedCookieJar) => {
-			client.cookieManager!.setCurrentCookieJar(cookieJar, client.getUsername() ?? undefined);
+			cookieManager.setCurrentCookieJar(cookieJar, client.getUsername() ?? undefined);
 		});
 		return client;
 	}

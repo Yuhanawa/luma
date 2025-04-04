@@ -10,7 +10,7 @@ export default class CookieManager {
 	constructor() {
 		this.cookieStore = this.getCookieStore();
 	}
-	getCurrentCookieBoxUUID(): string {
+	getCurrentCookieBoxUUID(): string | null {
 		return this.cookieStore.eating;
 	}
 	getTruck(): Map<string, cookieBox> {
@@ -22,17 +22,17 @@ export default class CookieManager {
 		return CookieJar.deserializeSync(cookieBox.cookieJar);
 	}
 	getCurrentCookieJar(): CookieJar | null {
-		return this.getCookieJar(this.cookieStore.eating);
+		return this.cookieStore.eating ? this.getCookieJar(this.cookieStore.eating) : null;
 	}
 	getCookieBox(uuid: string): cookieBox | null {
 		return this.cookieStore.truck.get(uuid) ?? null;
 	}
 	getCurrentCookieBox(): cookieBox | null {
-		return this.getCookieBox(this.cookieStore.eating);
+		return this.cookieStore.eating ? this.getCookieBox(this.cookieStore.eating) : null;
 	}
 	deleteCookieBox(uuid: string) {
 		this.cookieStore.truck.delete(uuid);
-		if (this.cookieStore.eating === uuid) this.cookieStore.eating = "";
+		if (this.cookieStore.eating === uuid) this.cookieStore.eating = null;
 		this.saveCookieStoreAsync();
 	}
 	switchCookieBox(uuid: string) {
@@ -46,7 +46,8 @@ export default class CookieManager {
 		this.saveCookieStoreAsync();
 	}
 	switchNewCookieBox() {
-		this.cookieStore.eating = uuidV4();
+		this.cookieStore.eating = null;
+		this.saveCookieStoreAsync();
 	}
 	async setCookieJarAsync(uuid: string, serializedCookieJar: SerializedCookieJar, username?: string | null) {
 		if (!uuid) {
@@ -68,9 +69,8 @@ export default class CookieManager {
 		await this.saveCookieStoreAsync();
 	}
 	async setCurrentCookieJar(serializedCookieJar: SerializedCookieJar, username?: string | null) {
-		if (!this.cookieStore.eating) {
-			this.cookieStore.eating = uuidV4();
-		}
+		if (!this.cookieStore.eating) this.cookieStore.eating = uuidV4();
+
 		await this.setCookieJarAsync(this.cookieStore.eating, serializedCookieJar, username);
 	}
 	static async checkCookie(cookieJar: CookieJar): Promise<boolean> {
@@ -100,7 +100,7 @@ export default class CookieManager {
 			}
 		} else console.log("Cookie store not found, use new");
 
-		cookieStore ??= { eating: "", truck: new Map() };
+		cookieStore ??= { eating: null, truck: new Map() };
 		return cookieStore;
 	}
 	private async getCookieStoreAsync(): Promise<cookieStore> {
@@ -126,7 +126,7 @@ export default class CookieManager {
 			}
 		} else console.log("Cookie store not found, use new");
 
-		cookieStore ??= { eating: "", truck: new Map() };
+		cookieStore ??= { eating: null, truck: new Map() };
 		return cookieStore;
 	}
 	private setCookieStore(cookieStore: cookieStore) {
@@ -156,7 +156,7 @@ export default class CookieManager {
 }
 
 interface cookieStore {
-	eating: string;
+	eating: string | null;
 	truck: Map<string, cookieBox>;
 }
 

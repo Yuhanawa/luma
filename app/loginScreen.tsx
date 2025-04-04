@@ -1,53 +1,181 @@
-import { useCallback, useState } from "react";
+import { format } from "date-fns";
+import { AlertCircle, ChevronRight, Cookie as CookieIcon, Info, Key, LogIn, User } from "lucide-react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
-import { Cookie, CookieJar } from "tough-cookie";
+import { ActivityIndicator, Alert, Animated, Keyboard, Pressable, ScrollView, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { LanguageSwitcher } from "~/components/LanguageSwitcher";
 import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 import { Text } from "~/components/ui/text";
-import { LINUXDO_CONST } from "~/constants/linuxDo";
-import CookieManager from "~/lib/cookieManager";
+import { useAuthStore } from "~/store/authStore";
 
-export default function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
+export default function LoginScreen() {
 	const { t } = useTranslation();
 	const [_t, set_t] = useState("");
+	const [error, setError] = useState<string | null>(null);
+	const fadeAnim = useRef(new Animated.Value(0)).current;
+	const { cookieManager, login, switchAccount, isLoading } = useAuthStore();
+
+	// Animation effect when component mounts
+	useEffect(() => {
+		Animated.timing(fadeAnim, {
+			toValue: 1,
+			duration: 500,
+			useNativeDriver: true,
+		}).start();
+	}, [fadeAnim]);
+
+	const accountsView = useMemo(() => {
+		const truck = cookieManager.getTruck();
+		if (truck.size === 0) return null;
+
+		return (
+			<Card className="w-full mb-6">
+				<CardHeader>
+					<CardTitle className="flex-row items-center">
+						<User size={16} className="mr-2 text-primary" />
+						<Text>{t("login.savedAccounts")}</Text>
+					</CardTitle>
+					<CardDescription>{t("login.savedAccountsDescription")}</CardDescription>
+				</CardHeader>
+				<CardContent className="px-0">
+					{Array.from(truck.entries()).map(([uuid, cookieBox]) => {
+						const username = cookieBox.username || t("login.unknownUser");
+						const updatedDate = new Date(cookieBox.updatedAt);
+						const formattedDate = format(updatedDate, "MMM d, yyyy");
+
+						return (
+							<Pressable
+								key={uuid}
+								className="flex-row items-center justify-between px-6 py-3 border-b border-border active:bg-muted"
+								onPress={() => handleAccountSelect(uuid)}
+							>
+								<View className="flex-1">
+									<Text className="font-medium text-foreground">{username}</Text>
+									<Text className="text-sm text-muted-foreground">{formattedDate}</Text>
+								</View>
+								<ChevronRight size={18} className="text-muted-foreground" />
+							</Pressable>
+						);
+					})}
+				</CardContent>
+				<CardFooter className="flex-col">
+					<Text className="text-muted-foreground text-sm">{t("login.securityNote")}</Text>
+					<Text className="text-muted-foreground text-sm">Android: keystore system / ios: keychain services</Text>
+				</CardFooter>
+			</Card>
+		);
+	}, [cookieManager, t]);
+
+	const handleAccountSelect = useCallback(
+		(uuid: string) => {
+			try {
+				switchAccount(uuid).catch((error) => {
+					setError(error instanceof Error ? error.message : String(error));
+					Alert.alert(t("login.error"), t("login.accountSwitchError"));
+				});
+			} catch (error) {
+				setError(error instanceof Error ? error.message : String(error));
+				Alert.alert(t("login.error"), t("login.accountSwitchError"));
+			}
+		},
+		[switchAccount, t],
+	);
 
 	const handlePress = useCallback(() => {
-		const cookieJar = new CookieJar();
-		cookieJar.setCookie(
-			new Cookie({
-				key: "_t",
-				value: _t,
-				domain: LINUXDO_CONST.DOMAIN,
-				path: "/",
-			}),
-			LINUXDO_CONST.HTTPS_URL,
-		);
-		const serializedCookieJar = cookieJar.serializeSync();
-		if (serializedCookieJar !== undefined) {
-			const cookieManager = new CookieManager();
-			cookieManager.switchNewCookieBox();
-			cookieManager
-				.setCurrentCookieJar(serializedCookieJar)
-				.then(() => {
-					onSuccess();
-				})
-				.catch((error) => {
-					throw Error("Failed to save cookie jar", error);
-				});
-		} else {
-			console.error("Unknown Error: serializedCookieJar is undefined");
+		if (!_t.trim()) {
+			setError(t("login.emptyCookieError"));
+			return;
 		}
-	}, [_t, onSuccess]);
+
+		setError(null);
+		Keyboard.dismiss();
+
+		login(_t).catch((error) => {
+			setError(error instanceof Error ? error.message : String(error));
+			Alert.alert(t("login.error"), t("login.generalError"));
+		});
+	}, [_t, login, t]);
 
 	return (
-		<View className="flex-1 flex-col justify-center items-center bg-background text-foreground">
-			<Text>{t("login.title")}</Text>
-			<Text>{t("login.cookiePrompt")}</Text>
-			<Input value={_t} onChangeText={set_t} />
-			<Button onPress={handlePress}>
-				<Text>{t("login.confirm")}</Text>
-			</Button>
-		</View>
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<Animated.View className="flex-1 bg-background" style={{ opacity: fadeAnim }}>
+				<ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled" className="flex-1 px-4 py-6">
+					<View className="flex-1 items-center justify-center">
+						{/* App Logo */}
+						<View className="items-center mb-8">
+							<Text className="text-3xl font-bold text-primary">{t("home.appName")}</Text>
+							<Text className="text-muted-foreground text-center mt-1">{t("login.appDescription")}</Text>
+						</View>
+
+						{/* Saved Accounts Section */}
+						{accountsView}
+
+						{/* Login Form */}
+						<Card className="w-full">
+							<CardHeader>
+								<CardTitle className="flex-row items-center">
+									<LogIn size={16} className="mr-2 text-primary" />
+									<Text>{t("login.title")}</Text>
+								</CardTitle>
+								<CardDescription>{t("login.formDescription")}</CardDescription>
+							</CardHeader>
+							<CardContent className="space-y-4">
+								<View className="space-y-2">
+									<Label htmlFor="cookie" className="flex-row items-center">
+										<CookieIcon size={14} className="mr-1 text-muted-foreground" />
+										<Text>{t("login.cookiePrompt")}</Text>
+									</Label>
+									<Input
+										id="cookie"
+										value={_t}
+										onChangeText={set_t}
+										placeholder="_t cookie value"
+										autoCapitalize="none"
+										autoCorrect={false}
+										className="font-mono"
+									/>
+								</View>
+
+								{/* Error message */}
+								{error && (
+									<View className="flex-row items-center p-3 rounded-md bg-destructive/10">
+										<AlertCircle size={14} className="mr-2 text-destructive" />
+										<Text className="text-sm text-destructive">{error}</Text>
+									</View>
+								)}
+
+								{/* Help text */}
+								<View className="flex-row items-start p-3 rounded-md bg-muted">
+									<Info size={14} className="mr-2 mt-0.5 text-muted-foreground" />
+									<Text className="text-sm text-muted-foreground flex-1">{t("login.helpText")}</Text>
+								</View>
+
+								{/* Security note */}
+								<View className="flex-row items-center p-2">
+									<Text className="text-xs text-muted-foreground">{t("login.securityNote")}</Text>
+								</View>
+							</CardContent>
+							<CardFooter className="flex-row justify-between">
+								<LanguageSwitcher />
+								<Button onPress={handlePress} disabled={isLoading} className="min-w-24">
+									{isLoading ? (
+										<ActivityIndicator size="small" color="white" />
+									) : (
+										<View className="flex-row items-center">
+											<Key size={16} className="mr-2 text-background" />
+											<Text>{t("login.confirm")}</Text>
+										</View>
+									)}
+								</Button>
+							</CardFooter>
+						</Card>
+					</View>
+				</ScrollView>
+			</Animated.View>
+		</GestureHandlerRootView>
 	);
 }

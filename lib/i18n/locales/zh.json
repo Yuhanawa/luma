@@ -7,7 +7,20 @@
 	"login": {
 		"title": "登录",
 		"cookiePrompt": "输入 _t Cookie 进行登录",
-		"confirm": "确认"
+		"confirm": "确认",
+		"error": "错误",
+		"savedAccounts": "已保存账号",
+		"savedAccountsDescription": "选择一个账号登录",
+		"formDescription": "输入您的 _t cookie 值进行登录",
+		"appDescription": "Linux.do 非官方移动应用",
+		"unknownUser": "未知用户",
+		"accountSwitchError": "切换账号失败",
+		"emptyCookieError": "请输入 cookie 值",
+		"cookieSaveError": "保存 cookie 失败",
+		"serializationError": "序列化 cookie 失败",
+		"generalError": "发生错误",
+		"helpText": "要获取您的 _t cookie，请在浏览器中登录 linux.do，打开开发者工具，转到应用程序 > Cookie，并复制 _t cookie 的值。",
+		"securityNote": "您的 Cookie 信息全部加密保存在您的设备上。"
 	},
 	"tabs": {
 		"home": "首页",

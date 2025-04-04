@@ -1,13 +1,11 @@
-import * as FileSystem from "expo-file-system";
-import { Cookie, CookieJar } from "tough-cookie";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import DiscourseAPI from "~/lib/api";
+import type CookieManager from "~/lib/cookieManager";
 import LinuxDoClient from "~/lib/linuxDoClient";
 
 interface LinuxDoClientState {
 	client: LinuxDoClient | null;
-	init: () => Promise<void>;
+	init: (cookieManager?: CookieManager) => Promise<void>;
 	isLoading: boolean;
 }
 
@@ -16,11 +14,11 @@ export const useLinuxDoClientStore = create<LinuxDoClientState>()(
 		(set, get) => ({
 			client: null,
 			isLoading: false,
-			init: async () => {
+			init: async (cookieManager) => {
 				const { client: clientMaybeNull, isLoading } = get();
 				if (isLoading || clientMaybeNull !== null) return;
 				set({ isLoading: true });
-				const client = await LinuxDoClient.create();
+				const client = await LinuxDoClient.create(cookieManager);
 				try {
 					await client.get_session_csrf();
 				} catch (e) {

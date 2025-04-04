@@ -7,7 +7,20 @@
 	"login": {
 		"title": "Login",
 		"cookiePrompt": "Enter _t Cookie to login",
-		"confirm": "Confirm"
+		"confirm": "Confirm",
+		"error": "Error",
+		"savedAccounts": "Saved Accounts",
+		"savedAccountsDescription": "Select an account to login",
+		"formDescription": "Enter your _t cookie value to login",
+		"appDescription": "Linux.do Unofficial Mobile App",
+		"unknownUser": "Unknown User",
+		"accountSwitchError": "Failed to switch account",
+		"emptyCookieError": "Please enter a cookie value",
+		"cookieSaveError": "Failed to save cookie",
+		"serializationError": "Failed to serialize cookie",
+		"generalError": "An error occurred",
+		"helpText": "To get your _t cookie, login to linux.do in a browser, open developer tools, go to Application > Cookies, and copy the value of the _t cookie.",
+		"securityNote": "Your cookie is encrypted and stored only on your device."
 	},
 	"tabs": {
 		"home": "Home",
