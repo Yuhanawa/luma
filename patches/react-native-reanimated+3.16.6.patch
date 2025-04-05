@@ -1,0 +1,14 @@
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsManager.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsManager.cpp
+index d7d3e8b649bb468cefd0163c5bad07bcfc7d4338..a03ec9f4351fc62c38f5029681dde68573c981aa 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsManager.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsManager.cpp
+@@ -116,6 +116,9 @@ void LayoutAnimationsManager::startLayoutAnimation(
+   std::shared_ptr<Shareable> config, viewShareable;
+   {
+     auto lock = std::unique_lock<std::recursive_mutex>(animationsMutex_);
++    if (!collection::contains(getConfigsForType(type), tag)) {
++      return;
++    }
+     config = getConfigsForType(type)[tag];
+   }
+   // TODO: cache the following!!
