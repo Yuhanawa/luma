@@ -20,7 +20,20 @@
 		"serializationError": "序列化 cookie 失败",
 		"generalError": "发生错误",
 		"helpText": "要获取您的 _t cookie，请在浏览器中登录 linux.do，打开开发者工具，转到应用程序 > Cookie，并复制 _t cookie 的值。",
-		"securityNote": "您的 Cookie 信息全部加密保存在您的设备上。"
+		"securityNote": "您的 Cookie 信息全部加密保存在您的设备上。",
+		"tabCookie": "Cookie 登录",
+		"tabCredentials": "账号密码登录",
+		"username": "用户名",
+		"password": "密码",
+		"usernamePrompt": "输入用户名",
+		"passwordPrompt": "输入密码",
+		"emptyUsernameError": "请输入用户名",
+		"emptyPasswordError": "请输入密码",
+		"credentialsDescription": "使用账号密码登录（实验性功能，大概率失败）",
+		"experimentalFeature": "实验性功能，可能不稳定",
+		"loginFailedReason": "登录失败，原因：",
+		"tryUseCookie": "你或许应该尝试cookie登录",
+		"loginFailed": "登录失败"
 	},
 	"tabs": {
 		"home": "首页",
