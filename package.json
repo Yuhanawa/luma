@@ -63,6 +63,7 @@
 		"expo-haptics": "~14.0.1",
 		"expo-image": "~2.0.7",
 		"expo-linking": "~7.0.5",
+		"expo-localization": "~16.0.1",
 		"expo-media-library": "^17.0.6",
 		"expo-navigation-bar": "~4.0.8",
 		"expo-router": "~4.0.19",
