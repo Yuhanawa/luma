@@ -121,34 +121,40 @@ export default function LoginScreen() {
 
 		cookieManager.switchNewCookieBox();
 		// one-time-client
-		LinuxDoClient.create(cookieManager).then((client) => {
-			client.get_session_csrf().then(() => {
-				client
-					.login(username, password)
-					.then((result) => {
-						if (result.error) {
-							setError(result.error);
-							Alert.alert(t("login.loginFailedReason"), result.error);
+		LinuxDoClient.create(cookieManager)
+			.then((client) => {
+				client.get_session_csrf().then(() => {
+					client
+						.login(username, password)
+						.then((result) => {
+							if (result.error) {
+								setError(result.error);
+								Alert.alert(t("login.loginFailedReason"), result.error);
+								Alert.alert(t("login.tryUseCookie"));
+							} else {
+								checkLoginStatus().then((isLoggedIn) => {
+									if (isLoggedIn) {
+										setAuthStore({ isLoggedIn: true, isLoading: false, error: null });
+									} else {
+										Alert.alert(t("login.loginFailed"));
+										Alert.alert(t("login.tryUseCookie"));
+									}
+									setError(null);
+								});
+							}
+						})
+						.catch((error) => {
+							setError(error instanceof Error ? error.message : String(error));
+							Alert.alert(t("login.loginFailed"));
 							Alert.alert(t("login.tryUseCookie"));
-						} else {
-							checkLoginStatus().then((isLoggedIn) => {
-								if (isLoggedIn) {
-									setAuthStore({ isLoggedIn: true, isLoading: false, error: null });
-								} else {
-									Alert.alert(t("login.loginFailed"));
-									Alert.alert(t("login.tryUseCookie"));
-								}
-								setError(null);
-							});
-						}
-					})
-					.catch((error) => {
-						setError(error instanceof Error ? error.message : String(error));
-						Alert.alert(t("login.loginFailed"));
-						Alert.alert(t("login.tryUseCookie"));
-					});
+						});
+				});
+			})
+			.catch((error) => {
+				setError(error instanceof Error ? error.message : String(error));
+				Alert.alert(t("login.loginFailed"));
+				Alert.alert(t("login.tryUseCookie"));
 			});
-		});
 	}, [username, password, t, cookieManager, checkLoginStatus, setAuthStore]);
 
 	return (

@@ -1,7 +1,7 @@
 import type { AxiosRequestConfig } from "axios";
 import Constants from "expo-constants";
 import { Platform } from "react-native";
-import type { SerializedCookieJar } from "tough-cookie";
+import { CookieJar, type SerializedCookieJar } from "tough-cookie";
 import DiscourseAPI from "./api";
 import CookieManager from "./cookieManager";
 import type { ListLatestTopics200 } from "./gen/api/discourseAPI/schemas";
@@ -10,8 +10,14 @@ export default class LinuxDoClient extends DiscourseAPI {
 	static async create(cookieManager?: CookieManager): Promise<LinuxDoClient> {
 		// biome-ignore lint/style/noParameterAssign: <explanation>
 		cookieManager ??= new CookieManager();
-		const cookieJar = cookieManager.getCurrentCookieJar()!;
-		if (!(await CookieManager.checkCookie(cookieJar))) throw new Error("Cookie check failed: `_t` cookie not found");
+		let cookieJar = cookieManager.getCurrentCookieJar();
+		if (cookieJar !== null) {
+			if (!(await CookieManager.checkCookie(cookieJar))) throw new Error("Cookie check failed: `_t` cookie not found");
+		} else {
+			console.warn("No cookie jar found, creating new one");
+			console.warn("It only should happen when use credentials login");
+			cookieJar = new CookieJar();
+		}
 		const client = new LinuxDoClient("https://linux.do", {
 			initialCookie: cookieJar,
 			// update time: 2025-04-05
