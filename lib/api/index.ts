@@ -34,11 +34,11 @@ import _ajvErrors from "ajv-errors";
 import _ajvFormats from "ajv-formats";
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { wrapper as axios_cookiejar_warper } from "axios-cookiejar-support";
+import Constants from "expo-constants";
 import type { OpenAPIV3_1 } from "openapi-types";
 import { CookieJar, type SerializedCookieJar } from "tough-cookie";
 import DiscourseAPIGenerated from "./generated";
 import spec from "./openapi.json";
-import Constants from "expo-constants";
 
 // Type helper for better type inference.  Makes complex types easier to read in IDE tooltips.
 type Prettify<T> = {

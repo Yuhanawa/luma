@@ -1,10 +1,10 @@
 import type { AxiosRequestConfig } from "axios";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
 import type { SerializedCookieJar } from "tough-cookie";
 import DiscourseAPI from "./api";
 import CookieManager from "./cookieManager";
 import type { ListLatestTopics200 } from "./gen/api/discourseAPI/schemas";
-import { Platform } from "react-native";
-import Constants from "expo-constants";
 
 export default class LinuxDoClient extends DiscourseAPI {
 	static async create(cookieManager?: CookieManager): Promise<LinuxDoClient> {
