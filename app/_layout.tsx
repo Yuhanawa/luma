@@ -11,6 +11,7 @@ import Animated, { FadeIn, FadeInRight, ReanimatedLogLevel, configureReanimatedL
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ImageViewerProvider } from "~/components/providers/ImageViewerProvider";
 import { ThemeProvider } from "~/components/providers/ThemeProvider";
+import { initializeLanguage } from "~/lib/i18n";
 import { initIconWithClassName } from "~/lib/icons";
 import { useAuthStore } from "~/store/authStore";
 import i18n from "../lib/i18n";
@@ -22,6 +23,7 @@ function init() {
 		strict: false,
 	});
 
+	initializeLanguage();
 	initIconWithClassName();
 }
 
