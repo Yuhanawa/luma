@@ -3,6 +3,8 @@ import type { SerializedCookieJar } from "tough-cookie";
 import DiscourseAPI from "./api";
 import CookieManager from "./cookieManager";
 import type { ListLatestTopics200 } from "./gen/api/discourseAPI/schemas";
+import { Platform } from "react-native";
+import Constants from "expo-constants";
 
 export default class LinuxDoClient extends DiscourseAPI {
 	static async create(cookieManager?: CookieManager): Promise<LinuxDoClient> {
@@ -12,6 +14,12 @@ export default class LinuxDoClient extends DiscourseAPI {
 		if (!(await CookieManager.checkCookie(cookieJar))) throw new Error("Cookie check failed: `_t` cookie not found");
 		const client = new LinuxDoClient("https://linux.do", {
 			initialCookie: cookieJar,
+			// update time: 2025-04-05
+			userAgent: Platform.select({
+				android: `Mozilla/5.0 (Linux; Android 15;) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Mobile Safari/537.36 luma/${Constants.version ?? "0"}`,
+				ios: `Mozilla/5.0 (iPhone; CPU iPhone OS 17_7_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Mobile/15E148 Safari/604.1 luma/${Constants.version ?? "0"}`,
+				default: undefined,
+			}),
 		});
 		client.onCookieChanged((cookieJar: SerializedCookieJar) => {
 			cookieManager.setCurrentCookieJar(cookieJar, client.getUsername() ?? undefined);

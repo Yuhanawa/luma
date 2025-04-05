@@ -35,9 +35,10 @@ import _ajvFormats from "ajv-formats";
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { wrapper as axios_cookiejar_warper } from "axios-cookiejar-support";
 import type { OpenAPIV3_1 } from "openapi-types";
-import { Cookie, CookieJar, type SerializedCookieJar } from "tough-cookie";
+import { CookieJar, type SerializedCookieJar } from "tough-cookie";
 import DiscourseAPIGenerated from "./generated";
 import spec from "./openapi.json";
+import Constants from "expo-constants";
 
 // Type helper for better type inference.  Makes complex types easier to read in IDE tooltips.
 type Prettify<T> = {
@@ -247,7 +248,7 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 	 * @param opts - Configuration options.
 	 * @param opts.initialCookie - An optional initial cookie string to load.
 	 */
-	constructor(url: string, opts: { initialCookie?: string | SerializedCookieJar | CookieJar } = {}) {
+	constructor(url: string, opts: { initialCookie?: string | SerializedCookieJar | CookieJar; userAgent?: string } = {}) {
 		console.log("Creating DiscourseAPI instance: ", url);
 		super();
 
@@ -261,7 +262,7 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 				baseURL: this.url,
 				withCredentials: true,
 				headers: {
-					"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:137.0) Gecko/20100101 Firefox/137.0",
+					"User-Agent": opts.userAgent ?? `Mozilla/5.0 (Mobile; rv:137.0) Gecko/20100101 Firefox/137.0 luma/${Constants.version ?? "0"}`,
 					Accept: "application/json;q=0.9, text/plain;q=0.8, */*;q=0.5",
 					"Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
 					"X-Requested-With": "XMLHttpRequest",
