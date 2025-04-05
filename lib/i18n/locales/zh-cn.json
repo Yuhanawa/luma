@@ -29,7 +29,7 @@
 		"passwordPrompt": "输入密码",
 		"emptyUsernameError": "请输入用户名",
 		"emptyPasswordError": "请输入密码",
-		"credentialsDescription": "使用账号密码登录（实验性功能，大概率失败）",
+		"credentialsDescription": "使用账号密码登录（大概率会因被 cloudflare 拦截而失败）",
 		"experimentalFeature": "实验性功能，可能不稳定",
 		"loginFailedReason": "登录失败，原因：",
 		"tryUseCookie": "你或许应该尝试cookie登录",
