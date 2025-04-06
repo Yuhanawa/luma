@@ -11,12 +11,11 @@ import { useCategoriesStore } from "~/store/categoriesStore";
 import { useTagsStore } from "~/store/tagsStore";
 import { useActivityNavigation } from "../activityScreen";
 
-// Mock data for external links
 export const EXTERNAL_LINKS: NavigationItem<string>[] = [
-	{ key: "https://example.com/1", text: "Link 1", data: "https://example.com/1" },
-	{ key: "https://example.com/2", text: "Link 2", data: "https://example.com/2" },
-	{ key: "https://example.com/3", text: "Link 3", data: "https://example.com/3" },
-	{ key: "https://example.com/4", text: "Link 4", data: "https://example.com/4" },
+	{ key: "status", text: "status", data: "https://status.linux.do/" },
+	{ key: "connect", text: "connect", data: "https://connect.linux.do/" },
+	{ key: "webmail", text: "webmail", data: "https://webmail.linux.do" },
+	{ key: "NeverGonnaGiveYouUp", text: "你不会想点击的", data: "https://www.bilibili.com/video/BV1GJ411x7h7/" },
 ];
 
 export default function NavigationScreen() {
