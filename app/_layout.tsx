@@ -9,6 +9,7 @@ import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, { FadeIn, FadeInRight, ReanimatedLogLevel, configureReanimatedLogger } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import { ImageViewerProvider } from "~/components/providers/ImageViewerProvider";
 import { ThemeProvider } from "~/components/providers/ThemeProvider";
 import { initializeLanguage } from "~/lib/i18n";
@@ -54,7 +55,6 @@ export default function RootLayout() {
 		return (
 			<Providers>
 				<LoginScreen />
-				<PortalHost />
 			</Providers>
 		);
 	}
@@ -73,7 +73,6 @@ export default function RootLayout() {
 					/>
 					<Stack.Screen name="+not-found" />
 				</Stack>
-				<PortalHost />
 			</Providers>
 		);
 	}
@@ -91,7 +90,11 @@ function Providers({ children }: { children: React.ReactNode }) {
 			<I18nextProvider i18n={i18n}>
 				<SafeAreaView style={{ flex: 1 }}>
 					<ImageViewerProvider>
-						<GestureHandlerRootView style={{ flex: 1 }}>{children}</GestureHandlerRootView>
+						<GestureHandlerRootView style={{ flex: 1 }}>
+							{children}
+							<PortalHost />
+							<Toast />
+						</GestureHandlerRootView>
 					</ImageViewerProvider>
 				</SafeAreaView>
 			</I18nextProvider>

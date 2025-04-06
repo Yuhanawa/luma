@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Alert, Keyboard, Pressable, Share, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import { PostList } from "~/components/topic/PostList";
 import { ReplyInput } from "~/components/topic/ReplyInput";
 import { TopicHeader } from "~/components/topic/TopicHeader";
@@ -65,7 +66,10 @@ export default function TopicScreen() {
 
 	const handleLike = useCallback((post: GetTopic200PostStreamPostsItem) => {
 		// TODO: Implement like
-		Alert.alert(`Thanks for your like! I know you liked this post (${post.id}), but don't like it yet, because it's not implemented yet.`);
+		Toast.show({
+			type: "info",
+			text1: `Thanks for your like! I know you liked this post (${post.id}), but don't like it yet, because it's not implemented yet.`,
+		});
 		console.log("Like post:", post.id);
 	}, []);
 

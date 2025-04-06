@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
+import Toast from "react-native-toast-message";
 import { UserAvatar } from "~/components/UserAvatar";
 import { Text } from "~/components/ui/text";
 import type { NotificationItem } from "~/components/user/NotificationItem";
@@ -34,7 +35,10 @@ export default function UserScreen() {
 	const handleNotificationPress = useCallback((notification: NotificationItem) => {
 		// TODO: Handle notification press
 		console.log("Notification pressed:", notification);
-		Alert.alert(JSON.stringify(notification));
+		Toast.show({
+			type: "info",
+			text1: JSON.stringify(notification),
+		});
 	}, []);
 
 	const handleMarkAsRead = useCallback((notification: NotificationItem) => {
