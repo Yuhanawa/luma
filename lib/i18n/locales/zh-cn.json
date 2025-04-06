@@ -2,7 +2,112 @@
 	"common": {
 		"loading": "加载中",
 		"failed": "加载失败",
-		"confirm": "确认"
+		"confirm": "确认",
+		"read": "已读",
+		"unread": "未读"
+	},
+	"notifications": {
+		"mentioned": {
+			"title": "你被 {{user}} 提及",
+			"description": "在话题: {{topic}}"
+		},
+		"replied": {
+			"title": "{{user}} 回复了你的帖子",
+			"description": "在话题: {{topic}}"
+		},
+		"quoted": {
+			"title": "{{user}} 引用了你的帖子",
+			"description": "在话题: {{topic}}"
+		},
+		"edited": {
+			"title": "{{user}} 编辑了你的帖子",
+			"description": "在话题: {{topic}}"
+		},
+		"liked": {
+			"title": "{{user}} 喜欢了你的帖子",
+			"description": "在话题: {{topic}}"
+		},
+		"private_message": {
+			"title": "来自 {{user}} 的私信",
+			"description": "话题: {{topic}}"
+		},
+		"invited_to_private_message": {
+			"title": "{{user}} 邀请你参与私信",
+			"description": "话题: {{topic}}"
+		},
+		"invitee_accepted": {
+			"title": "{{user}} 接受了你的邀请",
+			"description": "关于: {{topic}}"
+		},
+		"posted": {
+			"title": "{{user}} 在你关注的话题中发帖",
+			"description": "话题: {{topic}}"
+		},
+		"moved_post": {
+			"title": "{{user}} 移动了你的帖子",
+			"description": "到: {{topic}}"
+		},
+		"linked": {
+			"title": "{{user}} 链接了你的帖子",
+			"description": "在话题: {{topic}}"
+		},
+		"granted_badge": {
+			"title": "你获得了徽章: {{badge}}",
+			"description": "徽章: {{badge}}"
+		},
+		"invited_to_topic": {
+			"title": "{{user}} 邀请你参与话题",
+			"description": "话题: {{topic}}"
+		},
+		"custom": {
+			"title": "{{title}}",
+			"description": "{{message}}"
+		},
+		"group_mentioned": {
+			"title": "{{user}} 提及了你所在的群组",
+			"description": "在话题: {{topic}}"
+		},
+		"group_message_summary": {
+			"title": "群组消息摘要",
+			"description": "{{count}} 条新消息"
+		},
+		"watching_first_post": {
+			"title": "{{user}} 发布了新话题",
+			"description": "话题: {{topic}}"
+		},
+		"topic_reminder": {
+			"title": "话题提醒",
+			"description": "话题: {{topic}}"
+		},
+		"liked_consolidated": {
+			"title": "你的帖子收到了 {{count}} 个赞",
+			"description": "在话题: {{topic}}"
+		},
+		"reaction": {
+			"title": "{{user}} 对你的帖子做出了反应",
+			"description": "使用: {{reaction}}"
+		},
+		"bookmark_reminder": {
+			"title": "书签提醒",
+			"description": "话题: {{topic}}"
+		},
+		"chat_mention": {
+			"title": "{{user}} 在聊天中提到了你",
+			"description": "聊天: {{topic}}"
+		},
+		"chat_message": {
+			"title": "来自 {{user}} 的新聊天消息",
+			"description": "消息: {{message}}"
+		},
+		"following": {
+			"title": "{{user}} 开始关注你",
+			"description": "用户: {{user}}"
+		},
+		"unknown": {
+			"title": "未知通知类型: {{type}}",
+			"description": "详情不可用",
+			"user": "一个用户"
+		}
 	},
 	"login": {
 		"title": "登录",
@@ -42,6 +147,6 @@
 	},
 	"home": {
 		"appName": "LUMA",
-		"loadingTopics": "正在加载主题..."
+		"loadingTopics": "正在加载话题..."
 	}
 }

@@ -2,7 +2,112 @@
 	"common": {
 		"loading": "Loading",
 		"failed": "Failed to load",
-		"confirm": "Confirm"
+		"confirm": "Confirm",
+		"read": "Read",
+		"unread": "Unread"
+	},
+	"notifications": {
+		"mentioned": {
+			"title": "You were mentioned by {user}",
+			"description": "Mentioned in: {topic}"
+		},
+		"replied": {
+			"title": "{user} replied to your post",
+			"description": "In topic: {topic}"
+		},
+		"quoted": {
+			"title": "{user} quoted your post",
+			"description": "In topic: {topic}"
+		},
+		"edited": {
+			"title": "{user} edited your post",
+			"description": "In topic: {topic}"
+		},
+		"liked": {
+			"title": "{user} liked your post",
+			"description": "In topic: {topic}"
+		},
+		"private_message": {
+			"title": "Private message from {user}",
+			"description": "Subject: {topic}"
+		},
+		"invited_to_private_message": {
+			"title": "{user} invited you to a private message",
+			"description": "Subject: {topic}"
+		},
+		"invitee_accepted": {
+			"title": "{user} accepted your invitation",
+			"description": "For: {topic}"
+		},
+		"posted": {
+			"title": "{user} posted in a topic you're watching",
+			"description": "Topic: {topic}"
+		},
+		"moved_post": {
+			"title": "{user} moved your post",
+			"description": "To: {topic}"
+		},
+		"linked": {
+			"title": "{user} linked to your post",
+			"description": "In topic: {topic}"
+		},
+		"granted_badge": {
+			"title": "You earned a badge: {badge}",
+			"description": "Badge: {badge}"
+		},
+		"invited_to_topic": {
+			"title": "{user} invited you to a topic",
+			"description": "Topic: {topic}"
+		},
+		"custom": {
+			"title": "{title}",
+			"description": "{message}"
+		},
+		"group_mentioned": {
+			"title": "Group mention by {user}",
+			"description": "In topic: {topic}"
+		},
+		"group_message_summary": {
+			"title": "Group message summary",
+			"description": "{count} new messages"
+		},
+		"watching_first_post": {
+			"title": "New topic by {user}",
+			"description": "Topic: {topic}"
+		},
+		"topic_reminder": {
+			"title": "Topic reminder",
+			"description": "Topic: {topic}"
+		},
+		"liked_consolidated": {
+			"title": "Your post received {count} likes",
+			"description": "In topic: {topic}"
+		},
+		"reaction": {
+			"title": "{user} reacted to your post",
+			"description": "With: {reaction}"
+		},
+		"bookmark_reminder": {
+			"title": "Bookmark reminder",
+			"description": "Topic: {topic}"
+		},
+		"chat_mention": {
+			"title": "{user} mentioned you in chat",
+			"description": "Chat: {topic}"
+		},
+		"chat_message": {
+			"title": "New chat message from {user}",
+			"description": "Message: {message}"
+		},
+		"following": {
+			"title": "{user} is now following you",
+			"description": "User: {user}"
+		},
+		"unknown": {
+			"title": "Unknown notification: {type}",
+			"description": "Details not available",
+			"user": "an user"
+		}
 	},
 	"login": {
 		"title": "Login",
