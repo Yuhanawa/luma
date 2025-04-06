@@ -11,6 +11,11 @@
 		"editor.defaultFormatter": "biomejs.biome"
 	},
 	"[json]": {
-		"editor.defaultFormatter": "biomejs.biome"
+		"editor.formatOnSave": false,
+		"editor.defaultFormatter": "vscode.json-language-features"
+	},
+	"[jsonc]": {
+		"editor.formatOnSave": false,
+		"editor.defaultFormatter": "vscode.json-language-features"
 	}
 }
