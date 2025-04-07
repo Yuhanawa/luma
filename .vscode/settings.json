@@ -17,5 +17,10 @@
 	"[jsonc]": {
 		"editor.formatOnSave": false,
 		"editor.defaultFormatter": "vscode.json-language-features"
-	}
+	},
+	"i18n-ally.localesPaths": [
+		"lib/i18n",
+		"lib/i18n/locales"
+	],
+	"i18n-ally.keystyle": "nested"
 }
