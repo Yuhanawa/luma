@@ -24,7 +24,7 @@ interface ReplyInputProps {
 	onClose: () => void;
 	onSubmit: (content: string, replyToPostId?: number) => Promise<void>;
 }
-
+// TODO: add support for custom emojis
 export const ReplyInput = ({ visible, replyingTo, onClose, onSubmit }: ReplyInputProps) => {
 	const { colors } = useTheme();
 	const [content, setContent] = useState("");

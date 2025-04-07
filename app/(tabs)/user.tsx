@@ -27,29 +27,51 @@ export default function UserScreen() {
 			.catch((e) => {
 				console.error("ERROR: When getting user summary", e);
 			});
-	}, [userData, client, userSummary]);
+	}, [userData, client.getUserSummary, userSummary]);
 
 	const [notifications, setNotifications] = useState<NotificationItem[] | undefined>(undefined);
 	const [isNotificationsRefreshing, setIsNotificationsRefreshing] = useState(false);
 
 	const handleNotificationPress = useCallback((notification: NotificationItem) => {
-		// TODO: Handle notification press
-		console.log("Notification pressed:", notification);
-		Toast.show({
-			type: "info",
-			text1: JSON.stringify(notification),
-		});
+		// TODO: go to the topic page
+		console.log("Notification pressed", notification);
+		handleMarkAsRead(notification);
 	}, []);
 
-	const handleMarkAsRead = useCallback((notification: NotificationItem) => {
-		// TODO: Implement mark as read
-		setNotifications((prev) =>
-			prev === undefined ? [notification] : prev.map((n) => (n.id === notification.id ? { ...n, read: !n.read } : n)),
-		);
-	}, []);
+	const handleMarkAsRead = useCallback(
+		(notification: NotificationItem) => {
+			if (!notification.read) {
+				client
+					.markNotificationsAsRead({ id: notification.id })
+					.then(() => {
+						setNotifications((prev) =>
+							prev === undefined ? [notification] : prev.map((n) => (n.id === notification.id ? { ...n, read: true } : n)),
+						);
+						Toast.show({
+							type: "success",
+							text1: "Marked as read",
+						});
+					})
+					.catch((e) => {
+						console.error("ERROR: When marking notification as read", e);
+						Toast.show({
+							type: "error",
+							text1: "Failed to mark notification as read",
+						});
+					});
+			}
+		},
+		[client.markNotificationsAsRead],
+	);
 
 	useEffect(() => {
-		handleNotificationsRefresh();
+		handleNotificationsRefresh().catch((e) => {
+			console.error("ERROR: When getting notifications", e);
+			Toast.show({
+				type: "error",
+				text1: "Failed to get notifications",
+			});
+		});
 	}, []);
 
 	const handleNotificationsRefresh = useCallback(async () => {
@@ -60,7 +82,7 @@ export default function UserScreen() {
 
 		setNotifications((notifications as NotificationItem[]) ?? []);
 		setIsNotificationsRefreshing(false);
-	}, [client, isNotificationsRefreshing]);
+	}, [client.getNotifications, isNotificationsRefreshing]);
 
 	return (
 		<View className="flex-1">

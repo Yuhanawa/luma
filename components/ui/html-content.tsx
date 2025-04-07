@@ -32,6 +32,7 @@ import Svg, {
 } from "react-native-svg";
 import { useMemo, memo, useEffect } from "react";
 import { useImageViewer } from "../providers/ImageViewerProvider";
+import { useTheme } from "../providers/ThemeProvider";
 
 export interface HTMLContentProps extends Partial<RenderHTMLProps> {
   html: string;
@@ -250,12 +251,11 @@ export const useHTMLStyles = (
   baseSize = 16,
   customStyles: Partial<Record<TagName, MixedStyleDeclaration>> = {}
 ) => {
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const { colors } = useTheme();
 
   const defaultStyles: Partial<Record<TagName, MixedStyleDeclaration>> = {
     body: {
-      color: isDark ? "#E5E7EB" : "#374151",
+      color: colors.foreground,
       fontSize: baseSize,
       lineHeight: baseSize * 1.5,
     },
@@ -270,7 +270,7 @@ export const useHTMLStyles = (
       marginHorizontal: 2,
     },
     a: {
-      color: isDark ? "#60A5FA" : "#2563EB",
+      color: colors.accent,
       textDecorationLine: "none",
     },
     strong: {
@@ -280,7 +280,7 @@ export const useHTMLStyles = (
       fontStyle: "italic",
     },
     pre: {
-      backgroundColor: isDark ? "#1F2937" : "#F3F4F6",
+      backgroundColor: colors.muted,
       padding: baseSize * 0.75,
       borderRadius: 6,
       marginVertical: baseSize * 0.5,
@@ -289,14 +289,14 @@ export const useHTMLStyles = (
     code: {
       fontFamily: "monospace",
       fontSize: baseSize * 0.875,
-      backgroundColor: isDark ? "#374151" : "#F3F4F6",
+      backgroundColor: colors.muted,
       paddingHorizontal: 4,
       paddingVertical: 2,
       borderRadius: 4,
     },
     blockquote: {
       borderLeftWidth: 2,
-      borderLeftColor: isDark ? "#4B5563" : "#D1D5DB",
+      borderLeftColor: colors.border,
       paddingLeft: baseSize * 0.75,
       marginVertical: baseSize * 0.5,
       fontStyle: "italic",
@@ -316,41 +316,41 @@ export const useHTMLStyles = (
       fontSize: baseSize * 2,
       fontWeight: "bold",
       marginVertical: baseSize,
-      color: isDark ? "#F9FAFB" : "#111827",
+      color: colors.primaryForeground,
     },
     h2: {
       fontSize: baseSize * 1.5,
       fontWeight: "bold",
       marginVertical: baseSize * 0.75,
-      color: isDark ? "#F9FAFB" : "#111827",
+      color: colors.primaryForeground,
     },
     h3: {
       fontSize: baseSize * 1.25,
       fontWeight: "bold",
       marginVertical: baseSize * 0.5,
-      color: isDark ? "#F9FAFB" : "#111827",
+      color: colors.secondaryForeground,
     },
     h4: {
       fontSize: baseSize * 1.125,
       fontWeight: "bold",
       marginVertical: baseSize * 0.5,
-      color: isDark ? "#F9FAFB" : "#111827",
+      color: colors.secondaryForeground,
     },
     table: {
       borderWidth: 1,
-      borderColor: isDark ? "#4B5563" : "#D1D5DB",
+      borderColor: colors.border,
       marginVertical: baseSize * 0.5,
     },
     th: {
-      backgroundColor: isDark ? "#374151" : "#F3F4F6",
+      backgroundColor: colors.muted,
       padding: baseSize * 0.5,
       borderWidth: 1,
-      borderColor: isDark ? "#4B5563" : "#D1D5DB",
+      borderColor: colors.border,
     },
     td: {
       padding: baseSize * 0.5,
       borderWidth: 1,
-      borderColor: isDark ? "#4B5563" : "#D1D5DB",
+      borderColor: colors.border,
     },
   };
 
@@ -362,10 +362,11 @@ export const useHTMLStyles = (
     renderConfig: {
       enableExperimentalMarginCollapsing: true,
       enableExperimentalGhostLinesPrevention: true,
+      enableExperimentalBRCollapsing: true,
     },
   };
 };
-
+// TODO: improve
 export const HTMLContent = memo(
   ({
     html,
@@ -436,7 +437,6 @@ export const HTMLContent = memo(
               },
             },
           }}
-          enableExperimentalBRCollapsing
           {...renderConfig}
           {...props}
         />

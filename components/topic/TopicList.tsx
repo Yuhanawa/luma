@@ -3,7 +3,7 @@ import { BookmarkIcon, Filter, MessageSquare, RefreshCw, TrendingUp } from "luci
 import { useColorScheme } from "nativewind";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Pressable, RefreshControl, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated";
 import { ErrorRetry } from "../ErrorRetry";
 import type { SwipeAction } from "../SwipeableWrapper";

@@ -7,9 +7,7 @@ import { type ActivityHistoryItem, useActivityHistoryStore } from "~/store/activ
 export function HistorySection({ onPress }: { onPress: (item: ActivityHistoryItem) => void }) {
 	const { history } = useActivityHistoryStore();
 
-	if (history.length <= 1) {
-		return null;
-	}
+	if (history.length <= 1) return null;
 
 	return (
 		<View className="mb-4">

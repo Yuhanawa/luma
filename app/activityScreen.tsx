@@ -241,7 +241,7 @@ export default function ActivityScreen() {
 			<GestureDetector gesture={backGesture}>
 				<Animated.View entering={getEnteringAnimation()} style={animatedStyle}>
 					<View className="flex-1 bg-background">
-						<View className="px-4 border-b border-border">
+						<View className="px-4 border border-b border-border">
 							<View className="h-14 flex-row items-center">
 								<Text className="text-lg font-semibold">Activities</Text>
 							</View>

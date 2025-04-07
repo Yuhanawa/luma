@@ -1,13 +1,13 @@
 import { Stack } from "expo-router";
 import { ExternalLink } from "lucide-react-native";
 import { Linking } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View } from "react-native";
 import { EXTERNAL_LINKS } from "~/app/(tabs)/navigation";
 import { NavigationList } from "~/components/navigation/NavigationList";
 
 export default function ExternalLinksScreen() {
 	return (
-		<SafeAreaView className="flex-1 bg-background">
+		<View className="flex-1 bg-background">
 			<Stack.Screen
 				options={{
 					title: "External Links",
@@ -26,6 +26,6 @@ export default function ExternalLinksScreen() {
 				}))}
 				onItemPress={(item) => Linking.openURL(item.data)}
 			/>
-		</SafeAreaView>
+		</View>
 	);
 }

@@ -25,7 +25,7 @@ export const PostActions = ({ post, onReply, onLike, renderMore }: PostActionsPr
 					<Heart
 						size={16}
 						className="text-muted-foreground"
-						// fill={post.liked ? "#EF4444" : "none"}
+						// fill={post.liked ? "#EF4444" : "none"} // TODO: like
 					/>
 					<Text className="ml-1 text-sm text-muted-foreground">{/* {post.like_count || 0} */}</Text>
 				</Pressable>

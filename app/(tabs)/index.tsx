@@ -20,7 +20,7 @@ const SCENE_MAP = SceneMap({
 			title="Unread Topics"
 			listTopics="listUnreadTopics"
 			swipe={[
-				// TODO
+				// TODO: mark as read
 				{
 					text: "say nya!",
 					onPress: (item) => {
