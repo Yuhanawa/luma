@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { Animated, Pressable, View } from "react-native";
 import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
 import type { SwipeableProps } from "react-native-gesture-handler/lib/typescript/components/Swipeable";
@@ -18,13 +18,15 @@ type SwipeableWrapperProps<T> = {
 	item?: T;
 } & Omit<SwipeableProps, "children">;
 
-export const SwipeableWrapper = <T,>({ children, enableSwipe = true, swipe, item, ...swipeableProps }: SwipeableWrapperProps<T>) => {
+export const SwipeableWrapper = <T,>({ children, enableSwipe = true, swipe, item, ...props }: SwipeableWrapperProps<T>) => {
 	// If swipe is undefined and enableSwipe is false, or swipe is an empty array, don't enable swipe
 	const shouldEnableSwipe = swipe && swipe.length > 0 && enableSwipe;
 
 	if (!shouldEnableSwipe) {
 		return <>{children}</>;
 	}
+
+	const [activeOffsetXRight, setActiveOffsetXRight] = useState(Number.POSITIVE_INFINITY);
 
 	const renderRightActions = (
 		progress: Animated.AnimatedInterpolation<number>,
@@ -34,6 +36,9 @@ export const SwipeableWrapper = <T,>({ children, enableSwipe = true, swipe, item
 		if (!swipe || swipe.length === 0) {
 			return null;
 		}
+
+		// resolve gesture conflicts with parent elements
+		dragX.addListener(({ value }) => setActiveOffsetXRight(() => (value < -5 ? 5 : Number.POSITIVE_INFINITY)));
 
 		const translateX = progress.interpolate({
 			inputRange: [0, 1],
@@ -73,9 +78,12 @@ export const SwipeableWrapper = <T,>({ children, enableSwipe = true, swipe, item
       		*/}
 			<Swipeable
 				friction={2}
-				overshootRight={false}
-				renderRightActions={swipe ? renderRightActions : swipeableProps.renderRightActions}
-				{...swipeableProps}
+				overshootRight={true}
+				overshootFriction={10}
+				activeOffsetX={[-10, activeOffsetXRight]}
+				failOffsetY={[-10, 10]}
+				renderRightActions={swipe ? renderRightActions : props.renderRightActions}
+				{...props}
 			>
 				{children}
 			</Swipeable>
