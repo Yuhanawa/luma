@@ -3,11 +3,11 @@ import React, { type ComponentProps, useCallback, useMemo, useState } from "reac
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
+import { useTheme } from "~/components/providers/ThemeProvider";
+import { Button } from "~/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { Text } from "~/components/ui/text";
 import colorSchemes, { builtInThemeNames } from "~/lib/initialColorScheme";
-import { useTheme } from "../../providers/ThemeProvider";
-import { Button } from "../../ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../ui/dialog";
 
 interface ThemeCardProps extends ComponentProps<typeof Pressable> {
 	name: string;
@@ -72,33 +72,33 @@ export function ThemeCard({ name, showToolbar, onEditTheme, onDuplicateTheme, on
 							<View className="w-4 h-4 rounded-full bg-transparent" style={{ backgroundColor: colorScheme.border }} />
 						</View>
 						{showToolbar && (
-							<View className="flex-row justify-items-end gap-4 mt-2">
+							<View className="flex-row justify-between gap-4 mt-2">
 								{onEditTheme && (
-									<Pressable
+									<Button
 										className="flex-row items-center p-2 rounded-sm"
 										style={{ backgroundColor: colorScheme.popover }}
 										onPress={() => onEditTheme(name)}
 									>
 										<Edit size={16} className="mr-1" color={colorScheme.primary} />
 										<Text style={{ color: colorScheme.primary }}>{t("settings.theme.edit")}</Text>
-									</Pressable>
+									</Button>
 								)}
-								<Pressable
+								<Button
 									className="flex-row items-center p-2 rounded-sm"
 									style={{ backgroundColor: colorScheme.popover }}
 									onPress={() => (onDuplicateTheme ?? handleDuplicateTheme)(name)}
 								>
 									<Copy size={16} className="mr-1" color={colorScheme.primary} />
 									<Text style={{ color: colorScheme.primary }}>{t("settings.theme.duplicate")}</Text>
-								</Pressable>
-								<Pressable
+								</Button>
+								<Button
 									className="flex-row items-center p-2 rounded-sm"
 									style={{ backgroundColor: colorScheme.popover }}
 									onPress={() => (onDeleteTheme ? onDeleteTheme(name) : setShowDeleteConfirm(true))}
 								>
 									<Trash size={16} className="mr-1" color={colorScheme.primary} />
 									<Text style={{ color: colorScheme.primary }}>{t("settings.theme.delete")}</Text>
-								</Pressable>
+								</Button>
 							</View>
 						)}
 					</View>
@@ -121,8 +121,8 @@ export function ThemeCard({ name, showToolbar, onEditTheme, onDuplicateTheme, on
 								<Text>{t("common.cancel")}</Text>
 							</Button>
 						</DialogClose>
-						<Button variant="destructive" onPress={handleConfirmDelete} accessibilityLabel={t("common.delete")}>
-							<Trash size={16} className="mr-2" />
+						<Button variant="destructive" className="flex-row" onPress={handleConfirmDelete} accessibilityLabel={t("common.delete")}>
+							<Trash size={16} className="mr-2 text-destructive-foreground" />
 							<Text>{t("common.delete")}</Text>
 						</Button>
 					</DialogFooter>

@@ -134,22 +134,26 @@ export function ThemeEditor({ theme, onClosed }: ThemeEditorProps) {
 					</ScrollView>
 
 					<DialogFooter>
-						<Button variant="destructive" onPress={() => setShowDeleteConfirm(true)} accessibilityLabel={translations.delete}>
-							<Trash size={16} className="mr-2" />
-							<Text>{translations.delete}</Text>
-						</Button>
-
-						<View className="flex-row space-x-2">
+						<View className="flex-row gap-2 w-full justify-between">
+							<Button
+								variant="destructive"
+								className="flex-row w-2/5"
+								onPress={() => setShowDeleteConfirm(true)}
+								accessibilityLabel={translations.delete}
+							>
+								<Trash size={16} className="mr-2 text-destructive-foreground" />
+								<Text>{translations.delete}</Text>
+							</Button>
 							<DialogClose asChild>
-								<Button variant="outline" accessibilityLabel={translations.cancel}>
+								<Button variant="secondary" className="w-2/5" accessibilityLabel={translations.cancel}>
 									<Text>{translations.cancel}</Text>
 								</Button>
 							</DialogClose>
-							<Button disabled={!newThemeName.trim()} onPress={handleSaveTheme} accessibilityLabel={translations.save}>
-								<Save size={16} className="mr-2" />
-								<Text>{translations.save}</Text>
-							</Button>
 						</View>
+						<Button className="flex-row" disabled={!newThemeName.trim()} onPress={handleSaveTheme} accessibilityLabel={translations.save}>
+							<Save size={16} className="mr-2 text-primary" />
+							<Text>{translations.save}</Text>
+						</Button>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
