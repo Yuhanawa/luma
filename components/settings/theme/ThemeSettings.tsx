@@ -6,9 +6,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from "~/components/ui/label";
 import { Switch } from "~/components/ui/switch";
 import { Text } from "~/components/ui/text";
-import { useTheme } from "../providers/ThemeProvider";
-import { ThemeEditor } from "./theme/ThemeEditor";
-import { ThemeSelector } from "./theme/ThemeSelector";
+import { ThemeEditor } from "./ThemeEditor";
+import { ThemeSelector } from "./ThemeSelector";
+import { useTheme } from "~/components/providers/ThemeProvider";
 
 export function ThemeSettings() {
 	const { t } = useTranslation();
