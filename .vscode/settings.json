@@ -18,6 +18,9 @@
 		"editor.formatOnSave": false,
 		"editor.defaultFormatter": "vscode.json-language-features"
 	},
+	"[markdown]": {
+		"editor.defaultFormatter": "yzhang.markdown-all-in-one"
+	},
 	"i18n-ally.localesPaths": [
 		"lib/i18n",
 		"lib/i18n/locales"
