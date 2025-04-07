@@ -1,4 +1,54 @@
 {
+	"settings": {
+		"title": "Settings",
+		"language": {
+			"title": "Language",
+			"description": "Choose your preferred language",
+			"systemDefault": "Use system language",
+			"select": "Select language"
+		},
+		"theme": {
+			"title": "Theme",
+			"description": "Customize the app appearance",
+			"systemDefault": "Use system theme",
+			"light": "Light",
+			"dark": "Dark",
+			"customThemes": "Custom Themes",
+			"backToBasic": "Back to Basic Themes",
+			"builtIn": "Built-in Themes",
+			"customLight": "Custom Light Themes",
+			"customDark": "Custom Dark Themes",
+			"createNew": "Create New Theme",
+			"editor": {
+				"newTitle": "New Theme",
+				"editTitle": "Edit Theme",
+				"save": "Save",
+				"nameTitle": "Theme Name",
+				"namePlaceholder": "My Custom Theme",
+				"nameRequired": "Theme name is required",
+				"baseScheme": "Base Scheme",
+				"baseSchemeDescription": "This determines which system theme this will be used with",
+				"colors": "Colors",
+				"colorsDescription": "Customize the colors of your theme",
+				"baseColors": "Base Colors",
+				"primaryColors": "Primary Colors",
+				"secondaryColors": "Secondary Colors",
+				"accentColors": "Accent Colors",
+				"mutedColors": "Muted Colors",
+				"destructiveColors": "Destructive Colors",
+				"utilityColors": "Utility Colors",
+				"chartColors": "Chart Colors",
+				"actions": "Theme Actions",
+				"duplicate": "Duplicate Theme",
+				"delete": "Delete Theme"
+			}
+		},
+		"reset": {
+			"title": "Reset Settings",
+			"description": "Reset all settings to default values",
+			"button": "Reset All Settings"
+		}
+	},
 	"common": {
 		"loading": "Loading",
 		"failed": "Failed to load",

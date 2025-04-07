@@ -1,4 +1,54 @@
 {
+	"settings": {
+		"title": "设置",
+		"language": {
+			"title": "语言",
+			"description": "选择您偏好的语言",
+			"systemDefault": "使用系统语言",
+			"select": "选择语言"
+		},
+		"theme": {
+			"title": "主题",
+			"description": "自定义应用外观",
+			"systemDefault": "使用系统主题",
+			"light": "浅色",
+			"dark": "深色",
+			"customThemes": "自定义主题",
+			"backToBasic": "返回基础主题",
+			"builtIn": "内置主题",
+			"customLight": "自定义浅色主题",
+			"customDark": "自定义深色主题",
+			"createNew": "创建新主题",
+			"editor": {
+				"newTitle": "新建主题",
+				"editTitle": "编辑主题",
+				"save": "保存",
+				"nameTitle": "主题名称",
+				"namePlaceholder": "我的自定义主题",
+				"nameRequired": "主题名称不能为空",
+				"baseScheme": "基础方案",
+				"baseSchemeDescription": "决定此主题在跟随系统时使用的场景",
+				"colors": "颜色",
+				"colorsDescription": "自定义主题的颜色",
+				"baseColors": "基础颜色",
+				"primaryColors": "主要颜色",
+				"secondaryColors": "次要颜色",
+				"accentColors": "强调颜色",
+				"mutedColors": "柔和颜色",
+				"destructiveColors": "警告颜色",
+				"utilityColors": "工具颜色",
+				"chartColors": "图表颜色",
+				"actions": "主题操作",
+				"duplicate": "复制主题",
+				"delete": "删除主题"
+			}
+		},
+		"reset": {
+			"title": "重置设置",
+			"description": "将所有设置重置为默认值",
+			"button": "重置所有设置"
+		}
+	},
 	"common": {
 		"loading": "加载中",
 		"failed": "加载失败",

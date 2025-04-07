@@ -1,4 +1,5 @@
 import Constants from "expo-constants";
+import { useRouter } from "expo-router";
 import { IdCard, Info, LogOut, Settings } from "lucide-react-native";
 import { View } from "react-native";
 import { Button } from "~/components/ui/button";
@@ -8,6 +9,7 @@ import { useUserStore } from "~/store/userStore";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 export function UserHeader() {
+	const router = useRouter();
 	const { logout } = useAuthStore();
 	const { username, userData } = useUserStore();
 
@@ -85,11 +87,7 @@ export function UserHeader() {
 					</PopoverContent>
 				</Popover>
 
-				<Button
-					variant="ghost"
-					size="icon"
-					// onPress={() => router.push("/settings")}
-				>
+				<Button variant="ghost" size="icon" onPress={() => router.navigate("/settingsScreen")}>
 					<Settings size={22} className="text-muted-foreground" />
 				</Button>
 			</View>
