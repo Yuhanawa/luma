@@ -36,14 +36,14 @@ export function ThemePreview({ colors, className }: ThemePreviewProps) {
 	// Memoize translations to prevent recalculation on each render
 	const translations = useMemo(
 		() => ({
-			preview: t("settings.theme.preview", "Preview"),
-			textSample: t("settings.theme.textSample", "Text Sample"),
-			primary: t("settings.theme.primary", "Primary"),
-			secondary: t("settings.theme.secondary", "Secondary"),
-			accent: t("settings.theme.accent", "Accent"),
-			destructive: t("settings.theme.destructive", "Destructive"),
-			muted: t("settings.theme.muted", "Muted"),
-			card: t("settings.theme.card", "Card"),
+			preview: t("settings.theme.preview"),
+			textSample: t("settings.theme.textSample"),
+			primary: t("settings.theme.primary"),
+			secondary: t("settings.theme.secondary"),
+			accent: t("settings.theme.accent"),
+			destructive: t("settings.theme.destructive"),
+			muted: t("settings.theme.muted"),
+			card: t("settings.theme.card"),
 		}),
 		[t],
 	);

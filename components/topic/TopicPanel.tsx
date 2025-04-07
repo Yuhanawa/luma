@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { TopicList } from "~/components/topic/TopicList";
 import { Text } from "~/components/ui/text";
@@ -39,6 +40,7 @@ export type TopicPanelComponentProps = WithTopicPanelComponentProps<TopicPanelPr
 
 export function TopicPanel(props: TopicPanelComponentProps) {
 	const listTopics = props.listTopics;
+	const { t } = useTranslation();
 
 	const client = useLinuxDoClientStore().client!;
 	const router = useRouter();
@@ -135,7 +137,7 @@ export function TopicPanel(props: TopicPanelComponentProps) {
 		/>
 	) : (
 		<View className="flex-1 items-center justify-center">
-			<Text>Loading topics...</Text>
+			<Text>{t("home.loadingTopics")}</Text>
 		</View>
 	);
 }

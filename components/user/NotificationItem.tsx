@@ -299,9 +299,9 @@ export function NotificationItem({ notification, index, onPress, onMarkAsRead }:
 			<SwipeableWrapper
 				swipe={[
 					{
-						text: "被看光了",
+						text: t("notifications.seen_all"),
 						onPress: () => {
-							Alert.alert("难道你觉得这里会有一个已读按钮？");
+							Alert.alert(t("notifications.no_read_confirmation"));
 						},
 						backgroundColor: "#ff3b30",
 						icon: <PawPrint size={20} />,

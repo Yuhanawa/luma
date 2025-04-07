@@ -19,6 +19,28 @@
 			"customLight": "Custom Light Themes",
 			"customDark": "Custom Dark Themes",
 			"createNew": "Create New Theme",
+			"basic": "Basic Themes",
+			"custom": "Custom Themes",
+			"create": "Create Theme",
+			"noCustomThemes": "No custom themes yet",
+			"editTheme": "Edit Theme",
+			"createTheme": "Create Theme",
+			"editDescription": "Customize colors for your theme",
+			"themeName": "Theme name",
+			"selectColor": "Select Color to Edit",
+			"deleteTheme": "Delete Theme",
+			"deleteConfirmation": "Are you sure you want to delete this theme? This action cannot be undone.",
+			"preview": "Preview",
+			"textSample": "Text Sample",
+			"primary": "Primary",
+			"secondary": "Secondary",
+			"accent": "Accent",
+			"destructive": "Destructive",
+			"muted": "Muted",
+			"card": "Card",
+			"edit": "Edit",
+			"duplicate": "Duplicate",
+			"delete": "Delete",
 			"editor": {
 				"newTitle": "New Theme",
 				"editTitle": "Edit Theme",
@@ -54,9 +76,15 @@
 		"failed": "Failed to load",
 		"confirm": "Confirm",
 		"read": "Read",
-		"unread": "Unread"
+		"unread": "Unread",
+		"cancel": "Cancel",
+		"save": "Save",
+		"delete": "Delete"
 	},
 	"notifications": {
+		"mark_as_read": "Mark as read",
+		"seen_all": "Seen all",
+		"no_read_confirmation": "Do you think there would be a read button here?",
 		"mentioned": {
 			"title": "You were mentioned by {user}",
 			"description": "Mentioned in: {topic}"
@@ -197,6 +225,8 @@
 	},
 	"home": {
 		"appName": "LUMA",
-		"loadingTopics": "Loading topics..."
+		"loadingTopics": "Loading topics...",
+		"allTopics": "All Topics",
+		"unreadTopics": "Unread Topics"
 	}
-}
+} 

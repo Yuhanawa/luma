@@ -1,202 +1,232 @@
 {
-	"settings": {
-		"title": "设置",
-		"language": {
-			"title": "语言",
-			"description": "选择您偏好的语言",
-			"systemDefault": "使用系统语言",
-			"select": "选择语言"
-		},
-		"theme": {
-			"title": "主题",
-			"description": "自定义应用外观",
-			"systemDefault": "使用系统主题",
-			"light": "浅色",
-			"dark": "深色",
-			"customThemes": "自定义主题",
-			"backToBasic": "返回基础主题",
-			"builtIn": "内置主题",
-			"customLight": "自定义浅色主题",
-			"customDark": "自定义深色主题",
-			"createNew": "创建新主题",
-			"editor": {
-				"newTitle": "新建主题",
-				"editTitle": "编辑主题",
-				"save": "保存",
-				"nameTitle": "主题名称",
-				"namePlaceholder": "我的自定义主题",
-				"nameRequired": "主题名称不能为空",
-				"baseScheme": "基础方案",
-				"baseSchemeDescription": "决定此主题在跟随系统时使用的场景",
-				"colors": "颜色",
-				"colorsDescription": "自定义主题的颜色",
-				"baseColors": "基础颜色",
-				"primaryColors": "主要颜色",
-				"secondaryColors": "次要颜色",
-				"accentColors": "强调颜色",
-				"mutedColors": "柔和颜色",
-				"destructiveColors": "警告颜色",
-				"utilityColors": "工具颜色",
-				"chartColors": "图表颜色",
-				"actions": "主题操作",
-				"duplicate": "复制主题",
-				"delete": "删除主题"
-			}
-		},
-		"reset": {
-			"title": "重置设置",
-			"description": "将所有设置重置为默认值",
-			"button": "重置所有设置"
-		}
-	},
-	"common": {
-		"loading": "加载中",
-		"failed": "加载失败",
-		"confirm": "确认",
-		"read": "已读",
-		"unread": "未读"
-	},
-	"notifications": {
-		"mentioned": {
-			"title": "你被 {{user}} 提及",
-			"description": "在话题: {{topic}}"
-		},
-		"replied": {
-			"title": "{{user}} 回复了你的帖子",
-			"description": "在话题: {{topic}}"
-		},
-		"quoted": {
-			"title": "{{user}} 引用了你的帖子",
-			"description": "在话题: {{topic}}"
-		},
-		"edited": {
-			"title": "{{user}} 编辑了你的帖子",
-			"description": "在话题: {{topic}}"
-		},
-		"liked": {
-			"title": "{{user}} 喜欢了你的帖子",
-			"description": "在话题: {{topic}}"
-		},
-		"private_message": {
-			"title": "来自 {{user}} 的私信",
-			"description": "话题: {{topic}}"
-		},
-		"invited_to_private_message": {
-			"title": "{{user}} 邀请你参与私信",
-			"description": "话题: {{topic}}"
-		},
-		"invitee_accepted": {
-			"title": "{{user}} 接受了你的邀请",
-			"description": "关于: {{topic}}"
-		},
-		"posted": {
-			"title": "{{user}} 在你关注的话题中发帖",
-			"description": "话题: {{topic}}"
-		},
-		"moved_post": {
-			"title": "{{user}} 移动了你的帖子",
-			"description": "到: {{topic}}"
-		},
-		"linked": {
-			"title": "{{user}} 链接了你的帖子",
-			"description": "在话题: {{topic}}"
-		},
-		"granted_badge": {
-			"title": "你获得了徽章: {{badge}}",
-			"description": "徽章: {{badge}}"
-		},
-		"invited_to_topic": {
-			"title": "{{user}} 邀请你参与话题",
-			"description": "话题: {{topic}}"
-		},
-		"custom": {
-			"title": "{{title}}",
-			"description": "{{message}}"
-		},
-		"group_mentioned": {
-			"title": "{{user}} 提及了你所在的群组",
-			"description": "在话题: {{topic}}"
-		},
-		"group_message_summary": {
-			"title": "群组消息摘要",
-			"description": "{{count}} 条新消息"
-		},
-		"watching_first_post": {
-			"title": "{{user}} 发布了新话题",
-			"description": "话题: {{topic}}"
-		},
-		"topic_reminder": {
-			"title": "话题提醒",
-			"description": "话题: {{topic}}"
-		},
-		"liked_consolidated": {
-			"title": "你的帖子收到了 {{count}} 个赞",
-			"description": "在话题: {{topic}}"
-		},
-		"reaction": {
-			"title": "{{user}} 对你的帖子做出了反应",
-			"description": "使用: {{reaction}}"
-		},
-		"bookmark_reminder": {
-			"title": "书签提醒",
-			"description": "话题: {{topic}}"
-		},
-		"chat_mention": {
-			"title": "{{user}} 在聊天中提到了你",
-			"description": "聊天: {{topic}}"
-		},
-		"chat_message": {
-			"title": "来自 {{user}} 的新聊天消息",
-			"description": "消息: {{message}}"
-		},
-		"following": {
-			"title": "{{user}} 开始关注你",
-			"description": "用户: {{user}}"
-		},
-		"unknown": {
-			"title": "未知通知类型: {{type}}",
-			"description": "详情不可用",
-			"user": "一个用户"
-		}
-	},
-	"login": {
-		"title": "登录",
-		"cookiePrompt": "输入 _t Cookie 进行登录",
-		"confirm": "确认",
-		"error": "错误",
-		"savedAccounts": "已保存账号",
-		"savedAccountsDescription": "选择一个账号登录",
-		"formDescription": "输入您的 _t cookie 值进行登录",
-		"appDescription": "Linux.do 非官方移动应用",
-		"unknownUser": "未知用户",
-		"accountSwitchError": "切换账号失败",
-		"emptyCookieError": "请输入 cookie 值",
-		"cookieSaveError": "保存 cookie 失败",
-		"serializationError": "序列化 cookie 失败",
-		"generalError": "发生错误",
-		"helpText": "要获取您的 _t cookie，请在浏览器中登录 linux.do，打开开发者工具，转到应用程序 > Cookie，并复制 _t cookie 的值。",
-		"securityNote": "您的 Cookie 信息全部加密保存在您的设备上。",
-		"tabCookie": "Cookie 登录",
-		"tabCredentials": "账号密码登录",
-		"username": "用户名",
-		"password": "密码",
-		"usernamePrompt": "输入用户名",
-		"passwordPrompt": "输入密码",
-		"emptyUsernameError": "请输入用户名",
-		"emptyPasswordError": "请输入密码",
-		"credentialsDescription": "使用账号密码登录（大概率会因被 cloudflare 拦截而失败）",
-		"experimentalFeature": "实验性功能，可能不稳定",
-		"loginFailedReason": "登录失败，原因：",
-		"tryUseCookie": "你或许应该尝试cookie登录",
-		"loginFailed": "登录失败"
-	},
-	"tabs": {
-		"home": "首页",
-		"user": "用户",
-		"dev": "开发调试"
-	},
-	"home": {
-		"appName": "LUMA",
-		"loadingTopics": "正在加载话题..."
-	}
+  "settings": {
+    "title": "设置",
+    "language": {
+      "title": "语言",
+      "description": "选择您偏好的语言",
+      "systemDefault": "使用系统语言",
+      "select": "选择语言"
+    },
+    "theme": {
+      "title": "主题",
+      "description": "自定义应用外观",
+      "systemDefault": "使用系统主题",
+      "light": "浅色",
+      "dark": "深色",
+      "customThemes": "自定义主题",
+      "backToBasic": "返回基础主题",
+      "builtIn": "内置主题",
+      "customLight": "自定义浅色主题",
+      "customDark": "自定义深色主题",
+      "createNew": "创建新主题",
+      "basic": "基础主题",
+      "custom": "自定义主题",
+      "create": "创建主题",
+      "noCustomThemes": "暂无自定义主题",
+      "edit": "编辑",
+      "duplicate": "复制",
+      "delete": "删除",
+      "editTheme": "编辑主题",
+      "createTheme": "创建主题",
+      "editDescription": "自定义主题颜色",
+      "themeName": "主题名称",
+      "selectColor": "选择要编辑的颜色",
+      "deleteTheme": "删除主题",
+      "deleteConfirmation": "确定要删除此主题吗？此操作无法撤销。",
+      "preview": "预览",
+      "textSample": "文本示例",
+      "primary": "主要",
+      "secondary": "次要",
+      "accent": "强调",
+      "destructive": "警告",
+      "muted": "柔和",
+      "card": "卡片",
+      "editor": {
+        "newTitle": "新建主题",
+        "editTitle": "编辑主题",
+        "save": "保存",
+        "nameTitle": "主题名称",
+        "namePlaceholder": "我的自定义主题",
+        "nameRequired": "主题名称不能为空",
+        "baseScheme": "基础方案",
+        "baseSchemeDescription": "决定此主题在跟随系统时使用的场景",
+        "colors": "颜色",
+        "colorsDescription": "自定义主题的颜色",
+        "baseColors": "基础颜色",
+        "primaryColors": "主要颜色",
+        "secondaryColors": "次要颜色",
+        "accentColors": "强调颜色",
+        "mutedColors": "柔和颜色",
+        "destructiveColors": "警告颜色",
+        "utilityColors": "工具颜色",
+        "chartColors": "图表颜色",
+        "actions": "主题操作",
+        "duplicate": "复制主题",
+        "delete": "删除主题"
+      }
+    },
+    "reset": {
+      "title": "重置设置",
+      "description": "将所有设置重置为默认值",
+      "button": "重置所有设置"
+    }
+  },
+  "common": {
+    "loading": "加载中",
+    "failed": "加载失败",
+    "confirm": "确认",
+    "read": "已读",
+    "unread": "未读",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除"
+  },
+  "notifications": {
+    "mark_as_read": "标记为已读",
+    "seen_all": "被看光惹",
+    "no_read_confirmation": "难道你觉得这里会有一个已读按钮？",
+    "mentioned": {
+      "title": "你被 {{user}} 提及",
+      "description": "在话题: {{topic}}"
+    },
+    "replied": {
+      "title": "{{user}} 回复了你的帖子",
+      "description": "在话题: {{topic}}"
+    },
+    "quoted": {
+      "title": "{{user}} 引用了你的帖子",
+      "description": "在话题: {{topic}}"
+    },
+    "edited": {
+      "title": "{{user}} 编辑了你的帖子",
+      "description": "在话题: {{topic}}"
+    },
+    "liked": {
+      "title": "{{user}} 喜欢了你的帖子",
+      "description": "在话题: {{topic}}"
+    },
+    "private_message": {
+      "title": "来自 {{user}} 的私信",
+      "description": "话题: {{topic}}"
+    },
+    "invited_to_private_message": {
+      "title": "{{user}} 邀请你参与私信",
+      "description": "话题: {{topic}}"
+    },
+    "invitee_accepted": {
+      "title": "{{user}} 接受了你的邀请",
+      "description": "关于: {{topic}}"
+    },
+    "posted": {
+      "title": "{{user}} 在你关注的话题中发帖",
+      "description": "话题: {{topic}}"
+    },
+    "moved_post": {
+      "title": "{{user}} 移动了你的帖子",
+      "description": "到: {{topic}}"
+    },
+    "linked": {
+      "title": "{{user}} 链接了你的帖子",
+      "description": "在话题: {{topic}}"
+    },
+    "granted_badge": {
+      "title": "你获得了徽章: {{badge}}",
+      "description": "徽章: {{badge}}"
+    },
+    "invited_to_topic": {
+      "title": "{{user}} 邀请你参与话题",
+      "description": "话题: {{topic}}"
+    },
+    "custom": {
+      "title": "{{title}}",
+      "description": "{{message}}"
+    },
+    "group_mentioned": {
+      "title": "{{user}} 提及了你所在的群组",
+      "description": "在话题: {{topic}}"
+    },
+    "group_message_summary": {
+      "title": "群组消息摘要",
+      "description": "{{count}} 条新消息"
+    },
+    "watching_first_post": {
+      "title": "{{user}} 发布了新话题",
+      "description": "话题: {{topic}}"
+    },
+    "topic_reminder": {
+      "title": "话题提醒",
+      "description": "话题: {{topic}}"
+    },
+    "liked_consolidated": {
+      "title": "你的帖子收到了 {{count}} 个赞",
+      "description": "在话题: {{topic}}"
+    },
+    "reaction": {
+      "title": "{{user}} 对你的帖子做出了反应",
+      "description": "使用: {{reaction}}"
+    },
+    "bookmark_reminder": {
+      "title": "书签提醒",
+      "description": "话题: {{topic}}"
+    },
+    "chat_mention": {
+      "title": "{{user}} 在聊天中提到了你",
+      "description": "聊天: {{topic}}"
+    },
+    "chat_message": {
+      "title": "来自 {{user}} 的新聊天消息",
+      "description": "消息: {{message}}"
+    },
+    "following": {
+      "title": "{{user}} 开始关注你",
+      "description": "用户: {{user}}"
+    },
+    "unknown": {
+      "title": "未知通知类型: {{type}}",
+      "description": "详情不可用",
+      "user": "一个用户"
+    }
+  },
+  "login": {
+    "title": "登录",
+    "cookiePrompt": "输入 _t Cookie 进行登录",
+    "confirm": "确认",
+    "error": "错误",
+    "savedAccounts": "已保存账号",
+    "savedAccountsDescription": "选择一个账号登录",
+    "formDescription": "输入您的 _t cookie 值进行登录",
+    "appDescription": "Linux.do 非官方移动应用",
+    "unknownUser": "未知用户",
+    "accountSwitchError": "切换账号失败",
+    "emptyCookieError": "请输入 cookie 值",
+    "cookieSaveError": "保存 cookie 失败",
+    "serializationError": "序列化 cookie 失败",
+    "generalError": "发生错误",
+    "helpText": "要获取您的 _t cookie，请在浏览器中登录 linux.do，打开开发者工具，转到应用程序 > Cookie，并复制 _t cookie 的值。",
+    "securityNote": "您的 Cookie 信息全部加密保存在您的设备上。",
+    "tabCookie": "Cookie 登录",
+    "tabCredentials": "账号密码登录",
+    "username": "用户名",
+    "password": "密码",
+    "usernamePrompt": "输入用户名",
+    "passwordPrompt": "输入密码",
+    "emptyUsernameError": "请输入用户名",
+    "emptyPasswordError": "请输入密码",
+    "credentialsDescription": "使用账号密码登录（大概率会因被 cloudflare 拦截而失败）",
+    "experimentalFeature": "实验性功能，可能不稳定",
+    "loginFailedReason": "登录失败，原因：",
+    "tryUseCookie": "你或许应该尝试cookie登录",
+    "loginFailed": "登录失败"
+  },
+  "tabs": {
+    "home": "首页",
+    "user": "用户",
+    "dev": "开发调试"
+  },
+  "home": {
+    "appName": "LUMA",
+    "loadingTopics": "正在加载话题...",
+    "allTopics": "全部话题",
+    "unreadTopics": "未读话题"
+  }
 }

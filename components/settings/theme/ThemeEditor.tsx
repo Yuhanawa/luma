@@ -45,19 +45,16 @@ export function ThemeEditor({ theme, onClosed }: ThemeEditorProps) {
 
 	const translations = useMemo(
 		() => ({
-			editTheme: t("settings.theme.editTheme", "Edit Theme"),
-			createTheme: t("settings.theme.createTheme", "Create Theme"),
-			editDescription: t("settings.theme.editDescription", "Customize colors for your theme"),
-			themeName: t("settings.theme.themeName", "Theme name"),
-			selectColor: t("settings.theme.selectColor", "Select Color to Edit"),
-			deleteTheme: t("settings.theme.deleteTheme", "Delete Theme"),
-			deleteConfirmation: t(
-				"settings.theme.deleteConfirmation",
-				"Are you sure you want to delete this theme? This action cannot be undone.",
-			),
-			cancel: t("common.cancel", "Cancel"),
-			save: t("common.save", "Save"),
-			delete: t("common.delete", "Delete"),
+			editTheme: t("settings.theme.editTheme"),
+			createTheme: t("settings.theme.createTheme"),
+			editDescription: t("settings.theme.editDescription"),
+			themeName: t("settings.theme.themeName"),
+			selectColor: t("settings.theme.selectColor"),
+			deleteTheme: t("settings.theme.deleteTheme"),
+			deleteConfirmation: t("settings.theme.deleteConfirmation"),
+			cancel: t("common.cancel"),
+			save: t("common.save"),
+			delete: t("common.delete"),
 		}),
 		[t],
 	);

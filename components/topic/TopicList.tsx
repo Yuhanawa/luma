@@ -2,6 +2,7 @@ import { FlashList } from "@shopify/flash-list";
 import { BookmarkIcon, Filter, MessageSquare, RefreshCw, TrendingUp } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Pressable, RefreshControl, Text, View } from "react-native";
 import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated";
 import { ErrorRetry } from "../ErrorRetry";
@@ -34,6 +35,7 @@ export const TopicList = ({
 	enableSwipe = true,
 	swipe,
 }: TopicListProps) => {
+	const { t } = useTranslation();
 	const { colorScheme } = useColorScheme();
 	const [items, setItems] = useState<TopicCardItem[]>(initialItems);
 	const [refreshing, setRefreshing] = useState(false);
@@ -106,7 +108,7 @@ export const TopicList = ({
 		return (
 			<View className="py-4 flex items-center justify-center">
 				<ActivityIndicator size="small" color={isDark ? "#E5E7EB" : "#6B7280"} />
-				<Text className={`text-center ${isDark ? "text-gray-400" : "text-gray-500"}`}>Loading more...</Text>
+				<Text className={`text-center ${isDark ? "text-gray-400" : "text-gray-500"}`}>{t("home.loadingTopics")}</Text>
 			</View>
 		);
 	};
