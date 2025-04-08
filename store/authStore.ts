@@ -6,7 +6,7 @@ import CookieManager from "~/lib/cookieManager";
 import { useLinuxDoClientStore } from "./linuxDoClientStore";
 import { useUserStore } from "./userStore";
 
-interface AuthState {
+export interface AuthState {
 	isLoggedIn: boolean | undefined;
 	isLoading: boolean;
 	error: string | null;
@@ -37,7 +37,7 @@ export const useAuthStore = create<AuthState>()(
 					const isLoggedIn = await checkLoginStatus();
 					set({ isLoggedIn, isLoading: false });
 
-					if (isLoggedIn) await useLinuxDoClientStore.getState().init();
+					if (isLoggedIn) await useLinuxDoClientStore.getState().init({ cookieManager: get().cookieManager, authState: get() });
 				} catch (e) {
 					console.error("ERROR: When initializing auth store", e);
 					set({ isLoading: false, error: "Failed to initialize auth" });
@@ -79,7 +79,7 @@ export const useAuthStore = create<AuthState>()(
 					cookieManager.switchNewCookieBox();
 					await cookieManager.setCurrentCookieJar(serializedCookieJar);
 
-					await useLinuxDoClientStore.getState().init(cookieManager);
+					await useLinuxDoClientStore.getState().init({ cookieManager, authState: get() });
 
 					set({ isLoggedIn: true, isLoading: false });
 				} catch (e) {
@@ -122,7 +122,7 @@ export const useAuthStore = create<AuthState>()(
 					await logout();
 					cookieManager.switchCookieBox(uuid);
 
-					await useLinuxDoClientStore.getState().init(cookieManager);
+					await useLinuxDoClientStore.getState().init({ cookieManager, authState: get() });
 
 					set({ isLoggedIn: true, isLoading: false });
 				} catch (e) {

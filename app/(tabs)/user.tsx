@@ -87,13 +87,13 @@ export default function UserScreen() {
 	return (
 		<View className="flex-1">
 			<View className="p-4">
+				<UserHeader />
 				{userData === null || isLoading || error ? (
 					<View className="flex-1 items-center justify-center">
 						<Text>{error ?? "Loading..."}</Text>
 					</View>
 				) : (
 					<>
-						<UserHeader />
 						<View className="flex-row gap-4">
 							<UserAvatar username={userData.user.username} avatarTemplate={userData.user.avatar_template} size={64} />
 							<UserInfo

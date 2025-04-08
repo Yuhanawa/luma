@@ -32,7 +32,7 @@ import { Ajv } from "ajv";
 import type { ValidateFunction } from "ajv";
 import _ajvErrors from "ajv-errors";
 import _ajvFormats from "ajv-formats";
-import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from "axios";
+import axios, { type AxiosError, type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { wrapper as axios_cookiejar_warper } from "axios-cookiejar-support";
 import Constants from "expo-constants";
 import type { OpenAPIV3_1 } from "openapi-types";
@@ -352,6 +352,7 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 				}
 				// Handle Axios-specific errors.
 				if (axios.isAxiosError(error)) {
+					this.emitAxiosError(error);
 					if (error.response) {
 						// The request was made and the server responded with a status code outside of the 2xx range.
 						console.error("Request failed:", error.response.status, error.response.statusText);
@@ -419,6 +420,9 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 	onUsernameChanged(listener: (newUsername: string, oldUsername: string | undefined) => void): void {
 		this.eventEmitter.on("usernameChanged", listener);
 	}
+	onAxiosError(listener: (error: AxiosError) => void): void {
+		this.eventEmitter.on("axiosError", listener);
+	}
 
 	/**
 	 * Emits the 'cookieChanged' event.
@@ -436,6 +440,10 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 	 */
 	private emitUsernameChanged(newUsername: string, oldUsername: string | undefined) {
 		this.eventEmitter.emit("usernameChanged", newUsername, oldUsername);
+	}
+
+	private emitAxiosError(error: AxiosError) {
+		this.eventEmitter.emit("axiosError", error);
 	}
 
 	getUsername(): string | undefined {

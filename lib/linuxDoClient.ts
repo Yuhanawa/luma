@@ -1,14 +1,14 @@
 import type { AxiosRequestConfig } from "axios";
 import Constants from "expo-constants";
-import { Platform } from "react-native";
+import { Alert, Platform } from "react-native";
 import { CookieJar, type SerializedCookieJar } from "tough-cookie";
 import DiscourseAPI from "./api";
 import CookieManager from "./cookieManager";
 import type { ListLatestTopics200 } from "./gen/api/discourseAPI/schemas";
+import type { AuthState } from "~/store/authStore";
 
 export default class LinuxDoClient extends DiscourseAPI {
-	static async create(cookieManager?: CookieManager): Promise<LinuxDoClient> {
-		// biome-ignore lint/style/noParameterAssign: <explanation>
+	static async create({ cookieManager, authState }: { cookieManager?: CookieManager; authState?: AuthState }): Promise<LinuxDoClient> {
 		cookieManager ??= new CookieManager();
 		let cookieJar = cookieManager.getCurrentCookieJar();
 		if (cookieJar !== null) {
@@ -29,6 +29,19 @@ export default class LinuxDoClient extends DiscourseAPI {
 		});
 		client.onCookieChanged((cookieJar: SerializedCookieJar) => {
 			cookieManager.setCurrentCookieJar(cookieJar, client.getUsername() ?? undefined);
+		});
+		client.onAxiosError((e) => {
+			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+			const data = e?.response?.data as any;
+			if (data) {
+				if (data.error_type === "not_logged_in") {
+					console.log("Not logged in");
+					Alert.alert("Cookie Expired, please login again");
+					Alert.alert("Cookie 失效，请重新登录");
+					cookieManager.switchNewCookieBox();
+					authState?.logout();
+				}
+			}
 		});
 		return client;
 	}

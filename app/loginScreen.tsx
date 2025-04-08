@@ -121,7 +121,7 @@ export default function LoginScreen() {
 
 		cookieManager.switchNewCookieBox();
 		// one-time-client
-		LinuxDoClient.create(cookieManager)
+		LinuxDoClient.create({ cookieManager })
 			.then((client) => {
 				client.get_session_csrf().then(() => {
 					client
