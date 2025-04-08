@@ -11,6 +11,9 @@
 
 如遇到没反应/崩溃请提 issue，万分感谢！
 
+![](./docs/homes.png)
+![](./docs/screens.png)
+
 ## 🛠 技术栈
 
 - **框架**: React Native + Expo
