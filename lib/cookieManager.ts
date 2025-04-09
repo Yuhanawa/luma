@@ -33,7 +33,7 @@ export default class CookieManager {
 	deleteCookieBox(uuid: string) {
 		this.cookieStore.truck.delete(uuid);
 		if (this.cookieStore.eating === uuid) this.cookieStore.eating = null;
-		this.saveCookieStoreAsync();
+		this.saveCookieStore();
 	}
 	switchCookieBox(uuid: string) {
 		if (!uuid) {
@@ -134,10 +134,28 @@ export default class CookieManager {
 		this.saveCookieStore();
 	}
 	private saveCookieStore() {
+		// because of the limit of secure store, we only save the latest two cookies
+		// TODO
+		let truck = Array.from(this.cookieStore.truck.entries())
+			.sort(([, a], [, b]) => b.updatedAt - a.updatedAt)
+			.slice(0, 2);
+
+		if (this.cookieStore.eating) {
+			if (!truck.some(([uuid]) => uuid === this.cookieStore.eating)) {
+				const eatingCookieBox = this.cookieStore.truck.get(this.cookieStore.eating);
+				if (!eatingCookieBox) this.cookieStore.eating = null;
+				else {
+					truck = [[this.cookieStore.eating, eatingCookieBox], ...truck];
+					truck = truck.slice(0, 2);
+				}
+			}
+		}
+		this.cookieStore.truck = new Map(truck);
+
 		// Convert Map to object for JSON serialization
 		const serializedStore = {
 			eating: this.cookieStore.eating,
-			truck: Object.fromEntries(this.cookieStore.truck),
+			truck: Object.fromEntries(truck),
 		};
 		SecureStore.setItem(this.COOKIE_STORE_KEY, JSON.stringify(serializedStore));
 	}
@@ -146,10 +164,28 @@ export default class CookieManager {
 		await this.saveCookieStoreAsync();
 	}
 	private async saveCookieStoreAsync() {
+		// because of the limit of secure store, we only save the latest two cookies
+		// TODO
+		let truck = Array.from(this.cookieStore.truck.entries())
+			.sort(([, a], [, b]) => b.updatedAt - a.updatedAt)
+			.slice(0, 2);
+
+		if (this.cookieStore.eating) {
+			if (!truck.some(([uuid]) => uuid === this.cookieStore.eating)) {
+				const eatingCookieBox = this.cookieStore.truck.get(this.cookieStore.eating);
+				if (!eatingCookieBox) this.cookieStore.eating = null;
+				else {
+					truck = [[this.cookieStore.eating, eatingCookieBox], ...truck];
+					truck = truck.slice(0, 2);
+				}
+			}
+		}
+		this.cookieStore.truck = new Map(truck);
+
 		// Convert Map to object for JSON serialization
 		const serializedStore = {
 			eating: this.cookieStore.eating,
-			truck: Object.fromEntries(this.cookieStore.truck),
+			truck: Object.fromEntries(truck),
 		};
 		await SecureStore.setItemAsync(this.COOKIE_STORE_KEY, JSON.stringify(serializedStore));
 	}
