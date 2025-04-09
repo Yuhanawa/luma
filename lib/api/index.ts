@@ -36,7 +36,7 @@ import axios, { type AxiosError, type AxiosInstance, type AxiosRequestConfig, ty
 import { wrapper as axios_cookiejar_warper } from "axios-cookiejar-support";
 import Constants from "expo-constants";
 import type { OpenAPIV3_1 } from "openapi-types";
-import { CookieJar, type SerializedCookieJar } from "tough-cookie";
+import { Cookie, CookieJar, type SerializedCookieJar } from "tough-cookie";
 import DiscourseAPIGenerated from "./generated";
 import spec from "./openapi.json";
 
@@ -256,11 +256,28 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 		this.eventEmitter = new EventEmitter();
 		this.cookieJar = new CookieJar();
 
-		this.axiosInstance = axios_cookiejar_warper(
+		this.axiosInstance =
+			// axios_cookiejar_warper(
 			axios.create({
 				jar: this.cookieJar,
 				baseURL: this.url,
-				withCredentials: true,
+				// !NOTE
+				// First need to know:
+				// fetch on React Native is implemented on top of native-level APIs and differs slightly from the whatwg specification and the well-known github polyfill.
+				// This means that when the actual HTTP request is made, it's made by the native networking stack on iOS or OkHttp3 on Android, and in each case, it's the underlying ObjC or Java code that handles and stores the cookies, away from your JS code.
+				// Source: https://stackoverflow.com/questions/41132167/react-native-fetch-cookie-persist/79293653
+				// Than: there has two bugs
+				// 1. `withCredentials: false` works confusingly and often doesn't work as expected
+				// Source: Cookie based authentication is currently unstable. You can view some of the issues raised here: https://github.com/facebook/react-native/issues/23185
+				// 2. `withCredentials: true` doesn't work
+				// Source: The following options are currently not working with fetch: redirect:manual, credentials:omit
+				// That is to say:
+				// if you want **withCredentials**, you should use `withCredentials: false`
+				// I don't what will be in future, but now it works
+				// other reference:
+				// https://reactnative.dev/docs/network#known-issues-with-fetch-and-cookie-based-authentication
+				// https://github.com/facebook/react-native/issues/23185#issuecomment-1148130842
+				withCredentials: false,
 				headers: {
 					"User-Agent": opts.userAgent ?? `Mozilla/5.0 (Mobile; rv:137.0) Gecko/20100101 Firefox/137.0 luma/${Constants.version ?? "0"}`,
 					Accept: "application/json;q=0.9, text/plain;q=0.8, */*;q=0.5",
@@ -268,8 +285,8 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 					"X-Requested-With": "XMLHttpRequest",
 				},
 				validateStatus: (status) => (status >= 200 && status < 300) || status === 302,
-			}),
-		);
+			});
+		// );
 
 		//  Set initial cookie *before* making any requests.
 		if (opts.initialCookie) {
@@ -277,16 +294,20 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 		}
 
 		this.axiosInstance.interceptors.request.use((config) => {
+			config.headers.Cookie = this.cookieJar.getCookieStringSync(this.url);
+
 			if (this.axiosInstance.defaults.headers.common["X-CSRF-Token"] === null) {
 				this.axiosInstance.defaults.headers.common["X-CSRF-Token"] === undefined;
 				config.headers["X-CSRF-Token"] = undefined;
 				this.get_session_csrf();
 			}
 
+			// in fact: not need
 			if (this.axiosInstance.defaults.headers.common["X-CSRF-Token"]) {
 				config.headers["X-CSRF-Token"] = this.axiosInstance.defaults.headers.common["X-CSRF-Token"];
 			}
 
+			// in fact: not need
 			if (this.username) {
 				config.headers["Discourse-Logged-In"] = "true";
 			}
@@ -304,6 +325,7 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 				_topicId = null;
 			}
 
+			// in fact: not need
 			const userPresent = () => false;
 			if (userPresent()) {
 				config.headers["Discourse-Present"] = "true";
