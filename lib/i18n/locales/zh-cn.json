@@ -216,7 +216,21 @@
     "experimentalFeature": "实验性功能，可能不稳定",
     "loginFailedReason": "登录失败，原因：",
     "tryUseCookie": "你或许应该尝试cookie登录",
-    "loginFailed": "登录失败"
+    "loginFailed": "登录失败",
+    "tabEmail": "邮箱登录",
+    "usernameOrEmail": "用户名(username)或者邮箱",
+    "enterUsernameOrEmail": "请输入用户名(username)或者邮箱",
+    "emptyUsernameOrEmailError": "请输入用户名或邮箱",
+    "sendLoginEmail": "发送登录邮件",
+    "sendSuccess": "发送成功",
+    "sendFailed": "发送失败",
+    "emailLinkPrompt": "邮件中的链接",
+    "pasteLink": "复制链接到这里",
+    "emptyLinkError": "请输入登录链接",
+    "invalidLinkError": "请输入正确的登录链接",
+    "loginSuccess": "登录成功",
+    "tryWebsiteIfNotReceived": "如果没有收到，请尝试前往网页端发送",
+    "cooldownMessage": "冷却中 ({seconds}s)"
   },
   "tabs": {
     "home": "首页",

@@ -203,20 +203,34 @@
 		"serializationError": "Failed to serialize cookie",
 		"generalError": "An error occurred",
 		"helpText": "To get your _t cookie, login to linux.do in a browser, open developer tools, go to Application > Cookies, and copy the value of the _t cookie.",
-		"securityNote": "Your cookie is encrypted and stored only on your device.",
+		"securityNote": "Your cookie information is encrypted and stored only on your device.",
 		"tabCookie": "Cookie Login",
-		"tabCredentials": "Username & Password",
+		"tabCredentials": "Credentials Login",
 		"username": "Username",
 		"password": "Password",
 		"usernamePrompt": "Enter username",
 		"passwordPrompt": "Enter password",
 		"emptyUsernameError": "Please enter a username",
 		"emptyPasswordError": "Please enter a password",
-		"credentialsDescription": "Login with username and password (experimental, almost always fails)",
+		"credentialsDescription": "Login with username and password (likely to fail due to Cloudflare protection)",
 		"experimentalFeature": "Experimental feature, may be unstable",
 		"loginFailedReason": "Login failed, reason:",
 		"tryUseCookie": "You might want to try cookie login instead",
-		"loginFailed": "Login failed"
+		"loginFailed": "Login failed",
+		"tabEmail": "Email Login",
+		"usernameOrEmail": "Username or Email",
+		"enterUsernameOrEmail": "Please enter username or email",
+		"emptyUsernameOrEmailError": "Please enter username or email",
+		"sendLoginEmail": "Send Login Email",
+		"sendSuccess": "Email sent successfully",
+		"sendFailed": "Failed to send email",
+		"emailLinkPrompt": "Login link from email",
+		"pasteLink": "Paste the link here",
+		"emptyLinkError": "Please enter a login link",
+		"invalidLinkError": "Please enter a valid login link",
+		"loginSuccess": "Login successful",
+		"tryWebsiteIfNotReceived": "If you didn't receive the email, try sending it from the website",
+		"cooldownMessage": "Cooldown ({seconds}s)"
 	},
 	"tabs": {
 		"home": "Home",
@@ -229,4 +243,4 @@
 		"allTopics": "All Topics",
 		"unreadTopics": "Unread Topics"
 	}
-} 
+}

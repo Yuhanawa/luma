@@ -28,6 +28,10 @@ export default class LinuxDoClient extends DiscourseAPI {
 			}),
 		});
 		client.onCookieChanged((cookieJar: SerializedCookieJar) => {
+			console.log(
+				"Cookie changed, current cookies:",
+				cookieJar.cookies.map((c) => c.key),
+			);
 			cookieManager.setCurrentCookieJar(cookieJar, client.getUsername() ?? undefined);
 		});
 		client.onAxiosError((e) => {
@@ -44,6 +48,16 @@ export default class LinuxDoClient extends DiscourseAPI {
 			}
 		});
 		return client;
+	}
+
+	/**
+	 * @deprecated mask as deprecated, because you should not use axiosInstance, it only use for debugging
+	 */
+	__getAxiosInstance() {
+		console.warn("You should not use axiosInstance, it only use for debugging");
+		console.warn("You should not use axiosInstance, it only use for debugging");
+		console.warn("You should not use axiosInstance, it only use for debugging");
+		return this.axiosInstance;
 	}
 
 	getLoadMoreTopicsUrl(result: (ListLatestTopics200 & { topic_list?: { more_topics_url?: string } }) | undefined): string | null {
@@ -277,6 +291,25 @@ export default class LinuxDoClient extends DiscourseAPI {
 		};
 	}> {
 		const response = await this.axiosInstance.get(`/u/${username}/summary.json`, config);
+		return response.data;
+	}
+
+	async sendLoginEmail(
+		login: string,
+		config?: AxiosRequestConfig,
+	): Promise<{ success: string; error?: string; user_found?: boolean; hide_taken?: boolean }> {
+		const response = await this.axiosInstance.post(
+			"/u/email-login",
+			{
+				login,
+			},
+			config,
+		);
+		return response.data;
+	}
+
+	async emailLogin(token: string, config?: AxiosRequestConfig): Promise<{ success: string } | string[] | unknown> {
+		const response = await this.axiosInstance.post(`/session/email-login/${token}`, {}, config);
 		return response.data;
 	}
 }

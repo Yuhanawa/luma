@@ -1,9 +1,10 @@
 import { format } from "date-fns";
-import { AlertCircle, ChevronRight, Cookie as CookieIcon, Info, Key, LogIn, User } from "lucide-react-native";
+import { AlertCircle, ChevronRight, Cookie as CookieIcon, Info, Key, LogIn, Send, User } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Alert, Animated, Keyboard, Pressable, ScrollView, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Progress } from "~/components/ui/progress";
 import { LanguageSwitcher } from "~/components/LanguageSwitcher";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
@@ -18,10 +19,13 @@ export default function LoginScreen() {
 	const { t } = useTranslation();
 	const [_t, set_t] = useState("");
 	const [username, setUsername] = useState("");
-	const [password, setPassword] = useState("");
+	const [loginLink, setLoginLink] = useState("");
 	const [error, setError] = useState<string | null>(null);
-	const [activeTab, setActiveTab] = useState("cookie");
+	const [activeTab, setActiveTab] = useState("email");
 	const fadeAnim = useRef(new Animated.Value(0)).current;
+	const [emailSendCooldown, setEmailSendCooldown] = useState(0);
+	const [isSendingEmail, setIsSendingEmail] = useState(false);
+	const [isEmailLoginProcessing, setIsEmailLoginProcessing] = useState(false);
 	const { cookieManager, login, switchAccount, checkLoginStatus, isLoading } = useAuthStore();
 	const setAuthStore = useAuthStore.setState;
 
@@ -33,6 +37,23 @@ export default function LoginScreen() {
 			useNativeDriver: true,
 		}).start();
 	}, [fadeAnim]);
+
+	// Cooldown timer effect
+	useEffect(() => {
+		if (emailSendCooldown <= 0) return;
+
+		const timer = setInterval(() => {
+			setEmailSendCooldown((prev) => {
+				if (prev <= 1) {
+					clearInterval(timer);
+					return 0;
+				}
+				return prev - 1;
+			});
+		}, 1000);
+
+		return () => clearInterval(timer);
+	}, [emailSendCooldown]);
 
 	const accountsView = useMemo(() => {
 		const truck = cookieManager.getTruck();
@@ -106,18 +127,18 @@ export default function LoginScreen() {
 		});
 	}, [_t, login, t]);
 
-	const handleCredentialsLogin = useCallback(() => {
+	const handleSendLoginEmail = useCallback(() => {
+		// Don't proceed if already sending or in cooldown
+		if (isSendingEmail || emailSendCooldown > 0) return;
+
 		if (!username.trim()) {
-			setError(t("login.emptyUsernameError"));
-			return;
-		}
-		if (!password.trim()) {
-			setError(t("login.emptyPasswordError"));
+			setError(t("login.emptyUsernameOrEmailError"));
 			return;
 		}
 
 		setError(null);
 		Keyboard.dismiss();
+		setIsSendingEmail(true);
 
 		cookieManager.switchNewCookieBox();
 		// one-time-client
@@ -125,37 +146,86 @@ export default function LoginScreen() {
 			.then((client) => {
 				client.get_session_csrf().then(() => {
 					client
-						.login(username, password)
+						.sendLoginEmail(username)
 						.then((result) => {
-							if (result.error) {
-								setError(result.error);
-								Alert.alert(t("login.loginFailedReason"), result.error);
-								Alert.alert(t("login.tryUseCookie"));
+							setIsSendingEmail(false);
+							if (result.success === "OK") {
+								Alert.alert(t("login.sendSuccess"));
+								// Start 60s cooldown
+								setEmailSendCooldown(60);
 							} else {
-								checkLoginStatus().then((isLoggedIn) => {
-									if (isLoggedIn) {
-										setAuthStore({ isLoggedIn: true, isLoading: false, error: null });
-									} else {
-										Alert.alert(t("login.loginFailed"));
-										Alert.alert(t("login.tryUseCookie"));
-									}
-									setError(null);
-								});
+								Alert.alert(t("login.sendFailed"));
 							}
 						})
 						.catch((error) => {
-							setError(error instanceof Error ? error.message : String(error));
-							Alert.alert(t("login.loginFailed"));
-							Alert.alert(t("login.tryUseCookie"));
+							console.error(error);
+							setIsSendingEmail(false);
+							Alert.alert(t("login.sendFailed"));
 						});
 				});
 			})
 			.catch((error) => {
+				console.error(error);
+				setIsSendingEmail(false);
+				Alert.alert(t("login.sendFailed"));
+			});
+	}, [username, t, cookieManager, isSendingEmail, emailSendCooldown]);
+
+	const handleEmailLogin = useCallback(() => {
+		// Don't proceed if already processing
+		if (isEmailLoginProcessing) return;
+
+		if (!loginLink.trim()) {
+			setError(t("login.emptyLinkError"));
+			return;
+		}
+		// https://linux.do/session/email-login/{token}
+		if (!loginLink.trim().startsWith("https://linux.do/session/email-login/")) {
+			setError(t("login.invalidLinkError"));
+			return;
+		}
+		const token = loginLink.trim().split("/").pop();
+		if (!token) {
+			setError(t("login.invalidLinkError"));
+			return;
+		}
+
+		setError(null);
+		Keyboard.dismiss();
+		setIsEmailLoginProcessing(true);
+
+		cookieManager.switchNewCookieBox();
+		// one-time-client
+		LinuxDoClient.create({ cookieManager })
+			.then((client) => {
+				client.get_session_csrf().then(() => {
+					client
+						.emailLogin(token)
+						.then((result) => {
+							checkLoginStatus().then((isLoggedIn) => {
+								setIsEmailLoginProcessing(false);
+								if (isLoggedIn) {
+									setAuthStore({ isLoggedIn: true, isLoading: false, error: null });
+									Alert.alert(t("login.loginSuccess"));
+								} else {
+									setError(String(result));
+									Alert.alert(t("login.loginFailedReason"), String(result));
+								}
+							});
+						})
+						.catch((error) => {
+							setIsEmailLoginProcessing(false);
+							setError(error instanceof Error ? error.message : String(error));
+							Alert.alert(t("login.loginFailed"));
+						});
+				});
+			})
+			.catch((error) => {
+				setIsEmailLoginProcessing(false);
 				setError(error instanceof Error ? error.message : String(error));
 				Alert.alert(t("login.loginFailed"));
-				Alert.alert(t("login.tryUseCookie"));
 			});
-	}, [username, password, t, cookieManager, checkLoginStatus, setAuthStore]);
+	}, [loginLink, t, cookieManager, checkLoginStatus, setAuthStore, isEmailLoginProcessing]);
 
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
@@ -183,20 +253,78 @@ export default function LoginScreen() {
 							<CardContent>
 								<Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
 									<TabsList className="w-full mb-4 px-1 py-2 flex-row">
+										<TabsTrigger value="email" className="flex-1">
+											<Text>
+												<User size={14} className="mr-2 text-foreground" />
+												{t("login.tabEmail")}
+											</Text>
+										</TabsTrigger>
 										<TabsTrigger value="cookie" className="flex-1">
 											<Text>
 												<CookieIcon size={14} className="mr-2 text-foreground" />
 												{t("login.tabCookie")}
 											</Text>
 										</TabsTrigger>
-										<TabsTrigger value="credentials" className="flex-1">
-											<Text>
-												<User size={14} className="mr-2 text-foreground" />
-												{t("login.tabCredentials")}
-											</Text>
-										</TabsTrigger>
 									</TabsList>
 
+									<TabsContent value="email" className="space-y-4">
+										<View className="space-y-2">
+											<Label htmlFor="username" className="flex-row items-center">
+												<User size={14} className="mr-1 text-muted-foreground" />
+												<Text>{t("login.usernameOrEmail")}</Text>
+											</Label>
+											<Input
+												id="username"
+												value={username}
+												onChangeText={setUsername}
+												placeholder={t("login.enterUsernameOrEmail")}
+												autoCapitalize="none"
+												autoCorrect={false}
+											/>
+										</View>
+
+										<Button
+											disabled={isLoading || isSendingEmail || emailSendCooldown > 0}
+											onPress={handleSendLoginEmail}
+											className="min-w-24 relative overflow-hidden"
+										>
+											{isLoading || isSendingEmail ? (
+												<ActivityIndicator size="small" color="white" />
+											) : emailSendCooldown > 0 ? (
+												<View className="flex-row items-center">
+													<Send size={16} className="mr-2 text-background" />
+													<Text>{t("login.cooldownMessage").replace("{seconds}", emailSendCooldown.toString())}</Text>
+												</View>
+											) : (
+												<View className="flex-row items-center">
+													<Send size={16} className="mr-2 text-background" />
+													<Text>{t("login.sendLoginEmail")}</Text>
+												</View>
+											)}
+											{emailSendCooldown > 0 && (
+												<View className="absolute bottom-0 left-0 right-0 h-1">
+													<Progress value={(emailSendCooldown / 60) * 100} className="h-1" indicatorClassName="bg-background/30" />
+												</View>
+											)}
+										</Button>
+
+										<Text className="text-sm text-muted-foreground text-center">{t("login.tryWebsiteIfNotReceived")}</Text>
+
+										<View className="space-y-2">
+											<Label htmlFor="password" className="flex-row items-center">
+												<Key size={14} className="mr-1 text-muted-foreground" />
+												<Text>{t("login.emailLinkPrompt")}</Text>
+											</Label>
+											<Input
+												id="password"
+												value={loginLink}
+												onChangeText={setLoginLink}
+												placeholder={t("login.pasteLink")}
+												autoCapitalize="none"
+												autoCorrect={false}
+											/>
+										</View>
+									</TabsContent>
 									<TabsContent value="cookie" className="space-y-4">
 										<View className="space-y-2">
 											<Label htmlFor="cookie" className="flex-row items-center">
@@ -220,45 +348,6 @@ export default function LoginScreen() {
 											<Text className="text-sm text-muted-foreground flex-1">{t("login.helpText")}</Text>
 										</View>
 									</TabsContent>
-
-									<TabsContent value="credentials" className="space-y-4">
-										<View className="space-y-2">
-											<Label htmlFor="username" className="flex-row items-center">
-												<User size={14} className="mr-1 text-muted-foreground" />
-												<Text>{t("login.username")}</Text>
-											</Label>
-											<Input
-												id="username"
-												value={username}
-												onChangeText={setUsername}
-												placeholder={t("login.usernamePrompt")}
-												autoCapitalize="none"
-												autoCorrect={false}
-											/>
-										</View>
-
-										<View className="space-y-2">
-											<Label htmlFor="password" className="flex-row items-center">
-												<Key size={14} className="mr-1 text-muted-foreground" />
-												<Text>{t("login.password")}</Text>
-											</Label>
-											<Input
-												id="password"
-												value={password}
-												onChangeText={setPassword}
-												placeholder={t("login.passwordPrompt")}
-												autoCapitalize="none"
-												autoCorrect={false}
-												secureTextEntry
-											/>
-										</View>
-
-										{/* Experimental feature note */}
-										<View className="flex-row items-start p-3 rounded-md bg-muted">
-											<Info size={14} className="mr-2 mt-0.5 text-muted-foreground" />
-											<Text className="text-sm text-muted-foreground flex-1">{t("login.credentialsDescription")}</Text>
-										</View>
-									</TabsContent>
 								</Tabs>
 
 								{/* Error message */}
@@ -277,11 +366,11 @@ export default function LoginScreen() {
 							<CardFooter className="flex-row justify-between">
 								<LanguageSwitcher />
 								<Button
-									onPress={activeTab === "cookie" ? handleCookieLogin : handleCredentialsLogin}
-									disabled={isLoading}
+									onPress={activeTab === "cookie" ? handleCookieLogin : handleEmailLogin}
+									disabled={isLoading || (activeTab === "email" && (isEmailLoginProcessing || isSendingEmail))}
 									className="min-w-24"
 								>
-									{isLoading ? (
+									{isLoading || (activeTab === "email" && isEmailLoginProcessing) ? (
 										<ActivityIndicator size="small" color="white" />
 									) : (
 										<View className="flex-row items-center">
