@@ -19,7 +19,7 @@ export const TopicHeader = ({ topic }: TopicHeaderProps) => {
 	};
 
 	return (
-		<View className="p-4 bg-card">
+		<View className="p-4 pt-2 bg-card">
 			{/* biome-ignore lint/suspicious/noExplicitAny: TODO */}
 			<Text className="text-xl font-bold mb-2 text-foreground">{(topic as any).unicode_title || topic.fancy_title || topic.title}</Text>
 
@@ -48,7 +48,7 @@ export const TopicHeader = ({ topic }: TopicHeaderProps) => {
 			</View>
 
 			{/* Tags */}
-			{topic.tags && topic.tags.length > 0 && (
+			{/* {topic.tags && topic.tags.length > 0 && (
 				<View className="flex-row flex-wrap mt-2">
 					{topic.tags.map((tag) => (
 						<View key={`${tag}`} className="px-2 py-1 rounded-full mr-2 mb-1 bg-muted">
@@ -56,7 +56,7 @@ export const TopicHeader = ({ topic }: TopicHeaderProps) => {
 						</View>
 					))}
 				</View>
-			)}
+			)} */}
 		</View>
 	);
 };

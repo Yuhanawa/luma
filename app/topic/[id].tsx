@@ -1,16 +1,13 @@
 import { useLocalSearchParams } from "expo-router";
 import { Stack } from "expo-router";
 import { Bookmark, Bug, Cat, Dog, Send } from "lucide-react-native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Alert, Keyboard, Pressable, Share, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
-import { PostList } from "~/components/topic/PostList";
+import { NavBar } from "~/components/NavBar";
+import { PostPanel } from "~/components/topic/PostPanel";
 import { ReplyInput } from "~/components/topic/ReplyInput";
-import { TopicHeader } from "~/components/topic/TopicHeader";
-import { TopicNavBar } from "~/components/topic/TopicNavBar";
-import { TopicDetailSkeleton } from "~/components/topic/TopicSkeleton";
 import { Text } from "~/components/ui/text";
 import { LINUXDO_CONST } from "~/constants/linuxDo";
 import type { GetTopic200 } from "~/lib/gen/api/discourseAPI/schemas/getTopic200";
@@ -22,35 +19,17 @@ export default function TopicScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const client = useLinuxDoClientStore().client!;
 	const [topic, setTopic] = useState<GetTopic200 | undefined>(undefined);
-	const [isLoading, setIsLoading] = useState(true);
 	const [replyInputVisible, setReplyInputVisible] = useState(false);
 	const [replyingToPost, setReplyingToPost] = useState<GetTopic200PostStreamPostsItem | null>(null);
-
 	const postsCache = usePostsCache();
+	const [viewKey, setViewKey] = useState(0);
 
-	useEffect(() => {
-		if (topic) postsCache.set(id, topic);
-	}, [topic, postsCache.set, id]);
-
-	const loadTopic = useCallback(async () => {
-		try {
-			setIsLoading(true);
-			const response = postsCache.get(id) ?? (await client.getTopic({ id: id }));
-			setTopic(response);
-		} catch (error) {
-			console.error("Error loading topic:", error);
-			Alert.alert("Error", "Failed to load topic");
-		} finally {
-			setIsLoading(false);
-		}
-	}, [id, client, postsCache.get]);
-
-	useEffect(() => {
-		loadTopic();
-	}, [loadTopic]);
+	const handleRefresh = useCallback(() => {
+		postsCache.set(id, null);
+		setViewKey((prev) => prev + 1);
+	}, [id, postsCache.set]);
 
 	const updatePost = useCallback((post: GetTopic200PostStreamPostsItem) => {
-		// Update the post in the topic
 		setTopic((prevTopic) => {
 			if (!prevTopic) return prevTopic;
 			const updatedPosts = prevTopic.post_stream.posts.map((p) => (p.id === post.id ? post : p));
@@ -61,7 +40,7 @@ export default function TopicScreen() {
 	const handleReply = useCallback((post: GetTopic200PostStreamPostsItem) => {
 		setReplyingToPost(post);
 		setReplyInputVisible(true);
-		Keyboard.dismiss(); // Dismiss any active keyboard
+		Keyboard.dismiss();
 	}, []);
 
 	const handleLike = useCallback((post: GetTopic200PostStreamPostsItem) => {
@@ -74,8 +53,8 @@ export default function TopicScreen() {
 	}, []);
 
 	const handleBookmark = useCallback(
-		(post: GetTopic200PostStreamPostsItem) => {
-			const bookmarkedPost = post as unknown as GetTopic200PostStreamPostsItem & {
+		(post: GetTopic200PostStreamPostsItem, rerenderItem: () => void) => {
+			const bookmarkedPost = { ...post } as GetTopic200PostStreamPostsItem & {
 				bookmarked: boolean;
 				bookmark_reminder_at?: string | null;
 				bookmark_id?: number;
@@ -90,6 +69,7 @@ export default function TopicScreen() {
 					bookmarkedPost.bookmark_reminder_at = null;
 					bookmarkedPost.bookmark_name = null;
 					updatePost(bookmarkedPost);
+					rerenderItem();
 				});
 			else if (bookmarkedPost.bookmark_id)
 				client.deleteBookmark(bookmarkedPost.bookmark_id).then(() => {
@@ -99,21 +79,28 @@ export default function TopicScreen() {
 					bookmarkedPost.bookmark_reminder_at = null;
 					bookmarkedPost.bookmark_name = null;
 					updatePost(bookmarkedPost);
+					rerenderItem();
 				});
 		},
 		[client, updatePost],
 	);
 
 	const renderMore = useCallback(
-		(post: GetTopic200PostStreamPostsItem) => {
+		(post: GetTopic200PostStreamPostsItem, rerenderItem: () => void) => {
+			// 如果将这些逻辑移入PostPanel应该可以解决，同时代码会更清晰，明天解决
+			// biome-ignore lint/style/noParameterAssign: TODO: post没有被正确刷新，暂时先这样解决
+			post = topic?.post_stream.posts.find((p) => p.id === post.id) ?? post;
 			return (
 				<View className="m-2 p-2 bg-muted rounded-md flex gap-1">
 					<View className="flex-row">
-						<Pressable onPress={() => handleBookmark(post)} className="rounded-sm flex-row bg-card items-center m-1 px-2 py-1">
+						<Pressable
+							onPress={() => handleBookmark(post, rerenderItem)}
+							className="rounded-sm flex-row bg-card items-center m-1 px-2 py-1"
+						>
 							<Bookmark size={16} className="text-card-foreground" fill={post.bookmarked ? "#3B82F6" : "none"} />
 							<Text className="ml-1 text-card-foreground">{post.bookmarked ? "Unbookmark" : "Bookmark"}</Text>
 						</Pressable>
-						<Pressable onPress={() => handleBookmark(post)} className="rounded-sm flex-row bg-card items-center m-1 px-2 py-1">
+						<Pressable onPress={() => Alert.alert(`nya! (${post.id})`)} className="rounded-sm flex-row bg-card items-center m-1 px-2 py-1">
 							<Cat size={16} className="text-card-foreground" />
 							<Dog size={16} className="text-card-foreground" />
 							<Bug size={16} className="text-card-foreground" />
@@ -136,7 +123,7 @@ export default function TopicScreen() {
 				</View>
 			);
 		},
-		[handleBookmark],
+		[handleBookmark, topic],
 	);
 
 	// Handle submitting a reply
@@ -154,14 +141,13 @@ export default function TopicScreen() {
 							}),
 				});
 				console.log("Submitting reply:", { content, replyToPostId, topicId: id, response });
-				// After successful submission, reload the topic to show the new reply
-				await loadTopic();
+				handleRefresh();
 			} catch (error) {
 				console.error("Error submitting reply:", error);
 				Alert.alert("Error", "Failed to submit reply");
 			}
 		},
-		[id, loadTopic, client],
+		[id, client, handleRefresh],
 	);
 
 	// Close the reply input
@@ -179,29 +165,34 @@ export default function TopicScreen() {
 		}
 	}, [topic]);
 
-	if (!topic || isLoading) {
-		return (
-			<>
-				<Stack.Screen options={{ headerShown: false }} />
-				<SafeAreaView className="flex-1">
-					<TopicDetailSkeleton />
-				</SafeAreaView>
-			</>
-		);
-	}
-
 	return (
 		<>
-			<TopicNavBar topic={topic} onShare={handleShare} />
-			<View className="flex-1 relative">
-				<PostList
-					ListHeaderComponent={<TopicHeader topic={topic} />}
-					posts={topic.post_stream.posts}
+			<Stack.Screen options={{ headerShown: false }} />
+			{/* TODO: Nav Bar Title */}
+			<NavBar
+				content={
+					topic?.tags &&
+					topic.tags.length > 0 && (
+						<View className="flex-row flex-wrap ml-2">
+							{topic.tags.map((tag) => (
+								<View key={`${tag}`} className="px-2 py-1 rounded-full mr-2 mb-1 bg-muted">
+									<Text className="text-xs text-muted-foreground">{`${tag}`}</Text>
+								</View>
+							))}
+						</View>
+					)
+				}
+				onShare={handleShare}
+				onRefresh={handleRefresh}
+			/>
+			<View key={viewKey} className="flex-1 relative">
+				<PostPanel
+					topicId={id}
+					initialTopic={topic}
+					onTopicChange={setTopic}
 					onReply={handleReply}
 					onLike={handleLike}
 					renderMore={renderMore}
-					onRefresh={loadTopic}
-					isLoading={isLoading}
 				/>
 
 				{/* Reply to topic button */}

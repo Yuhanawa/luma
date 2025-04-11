@@ -1,5 +1,5 @@
 import { Reply } from "lucide-react-native";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Text, View } from "react-native";
 import type { GetTopic200PostStreamPostsItem } from "~/lib/gen/api/discourseAPI/schemas/getTopic200PostStreamPostsItem";
 import { getInnerText } from "~/lib/utils/html";
@@ -12,15 +12,17 @@ interface PostItemProps {
 	replyToPost?: GetTopic200PostStreamPostsItem | null;
 	onReply?: (post: GetTopic200PostStreamPostsItem) => void;
 	onLike?: (post: GetTopic200PostStreamPostsItem) => void;
-	renderMore?: (post: GetTopic200PostStreamPostsItem) => React.ReactNode;
+	renderMore?: (post: GetTopic200PostStreamPostsItem, rerenderItem: () => void) => React.ReactNode;
 }
 
 export const PostItem = ({ post, replyToPost, onReply, onLike, renderMore }: PostItemProps) => {
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	const excerpt = useMemo(() => replyToPost && getInnerText(replyToPost.cooked).substring(0, 100), [replyToPost?.cooked]);
+	const [viewKey, setViewKey] = useState(0);
+	const rerenderItem = useCallback(() => setViewKey((k) => k + 1), []);
 
 	return (
-		<View className="p-4 mb-2 bg-card">
+		<View key={viewKey} className="p-4 mb-2 bg-card rounded-md">
 			<PostHeader
 				username={post.username}
 				avatarTemplate={post.avatar_template}
@@ -41,7 +43,7 @@ export const PostItem = ({ post, replyToPost, onReply, onLike, renderMore }: Pos
 
 			<PostContent html={post.cooked} />
 
-			<PostActions post={post} onReply={onReply} onLike={onLike} renderMore={renderMore} />
+			<PostActions post={post} onReply={onReply} onLike={onLike} renderMore={(i) => renderMore?.(i, rerenderItem)} />
 		</View>
 	);
 };
