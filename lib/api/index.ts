@@ -302,7 +302,6 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 				this.get_session_csrf();
 			}
 
-			// in fact: not need
 			if (this.axiosInstance.defaults.headers.common["X-CSRF-Token"]) {
 				config.headers["X-CSRF-Token"] = this.axiosInstance.defaults.headers.common["X-CSRF-Token"];
 			}
@@ -325,7 +324,7 @@ export default class DiscourseAPI extends DiscourseAPIGenerated {
 				_topicId = null;
 			}
 
-			// in fact: not need
+			// TODO
 			const userPresent = () => false;
 			if (userPresent()) {
 				config.headers["Discourse-Present"] = "true";
