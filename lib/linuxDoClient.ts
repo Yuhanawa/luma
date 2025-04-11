@@ -2,10 +2,11 @@ import type { AxiosRequestConfig } from "axios";
 import Constants from "expo-constants";
 import { Alert, Platform } from "react-native";
 import { CookieJar, type SerializedCookieJar } from "tough-cookie";
+import type { AuthState } from "~/store/authStore";
 import DiscourseAPI from "./api";
+import type DiscourseAPIGenerated from "./api/generated";
 import CookieManager from "./cookieManager";
 import type { ListLatestTopics200 } from "./gen/api/discourseAPI/schemas";
-import type { AuthState } from "~/store/authStore";
 
 export default class LinuxDoClient extends DiscourseAPI {
 	static async create({ cookieManager, authState }: { cookieManager?: CookieManager; authState?: AuthState }): Promise<LinuxDoClient> {
@@ -104,14 +105,16 @@ export default class LinuxDoClient extends DiscourseAPI {
 		data: { reminder_at?: string; name?: string; auto_delete_preference?: number; bookmarkable_id: number; bookmarkable_type: string },
 		config?: AxiosRequestConfig,
 	): Promise<{ success: string; id: number }> {
-		const response = await this.axiosInstance.post("/bookmarks.json", {
-			data: {
+		await this.get_session_csrf();
+		const response = await this.axiosInstance.post(
+			"/bookmarks.json",
+			{
 				reminder_at: "",
 				auto_delete_preference: 3,
 				...data,
 			},
-			...config,
-		});
+			config,
+		);
 
 		return response.data;
 	}
@@ -127,6 +130,7 @@ export default class LinuxDoClient extends DiscourseAPI {
 		},
 		config?: AxiosRequestConfig,
 	): Promise<{ success: string }> {
+		await this.get_session_csrf();
 		const response = await this.axiosInstance.put(`/bookmarks/${data.id}.json`, {
 			data: {
 				reminder_at: "",
@@ -139,6 +143,7 @@ export default class LinuxDoClient extends DiscourseAPI {
 	}
 
 	async deleteBookmark(id: number, config?: AxiosRequestConfig): Promise<{ success: string; topic_bookmarked: boolean }> {
+		await this.get_session_csrf();
 		const response = await this.axiosInstance.delete(`/bookmarks/${id}.json`, config);
 		return response.data;
 	}
@@ -310,6 +315,29 @@ export default class LinuxDoClient extends DiscourseAPI {
 
 	async emailLogin(token: string, config?: AxiosRequestConfig): Promise<{ success: string } | string[] | unknown> {
 		const response = await this.axiosInstance.post(`/session/email-login/${token}`, {}, config);
+		return response.data;
+	}
+
+	/**
+	 * The correct version of getSpecificPostsFromTopic
+	 */
+	async getPostsFromTopic(
+		topic: string,
+		params: { post_ids: number[]; include_suggested?: boolean },
+	): Promise<ReturnType<DiscourseAPIGenerated["getSpecificPostsFromTopic"]>> {
+		const response = await this.axiosInstance.get(`/t/${topic}/posts.json`, {
+			params,
+			paramsSerializer: (params) => {
+				const str: string[] = [];
+				for (const p of Object.keys(params)) {
+					if (Array.isArray(params[p]))
+						// biome-ignore lint/complexity/noForEach: <explanation>
+						params[p].forEach((value) => str.push(`${encodeURIComponent(p)}[]=${encodeURIComponent(value)}`));
+					else str.push(`${encodeURIComponent(p)}=${encodeURIComponent(params[p])}`);
+				}
+				return str.join("&");
+			},
+		});
 		return response.data;
 	}
 }
