@@ -1,6 +1,7 @@
+import type { ViewToken } from "@shopify/flash-list";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, View } from "react-native";
+import { Alert, type NativeScrollEvent, type NativeSyntheticEvent, View } from "react-native";
 import { Text } from "~/components/ui/text";
 import type { GetTopic200 } from "~/lib/gen/api/discourseAPI/schemas/getTopic200";
 import type { GetTopic200PostStreamPostsItem } from "~/lib/gen/api/discourseAPI/schemas/getTopic200PostStreamPostsItem";
@@ -38,6 +39,45 @@ export function PostPanel(props: PostPanelProps) {
 	const [hasMore, setHasMore] = useState(true);
 
 	const postsCache = usePostsCache();
+
+	const handleReadPost = useCallback((topicId: number, postNumbers: number[]) => {}, []);
+
+	const [screenTrack] = useState(() => client.getScreenTrack(handleReadPost));
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(() => {
+		screenTrack.start(Number.parseInt(props.topicId));
+		screenTrack.scrolled();
+		screenTrack.setOnscreen(
+			topic?.post_stream.posts.map((p) => p.post_number).slice(0, 1) ?? [],
+			topic?.post_stream.posts.map((p) => p.post_number).slice(0, 1) ?? [],
+		);
+		return () => {
+			screenTrack.stop();
+		};
+	}, [screenTrack, props.topicId]);
+
+	const onPostListScroll = useCallback(
+		(event: NativeSyntheticEvent<NativeScrollEvent>) => {
+			screenTrack.scrolled();
+		},
+		[screenTrack],
+	);
+
+	const onPostListViewableItemsChanged = useCallback(
+		(info: { viewableItems: ViewToken[]; changed: ViewToken[] }) => {
+			const viewablePostNumbers = info.viewableItems.map(({ item }) => item as GetTopic200PostStreamPostsItem).map((p) => p.post_number);
+			const changedPostState = info.changed.map(({ item, isViewable }) => ({
+				post_number: (item as GetTopic200PostStreamPostsItem).post_number,
+				isViewable,
+			}));
+			screenTrack.setOnscreen(
+				viewablePostNumbers,
+				viewablePostNumbers.filter((p) => !changedPostState.find((c) => c.post_number === p && c.isViewable)),
+			);
+		},
+		[screenTrack],
+	);
 
 	// Initial load if no topic provided
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -168,6 +208,7 @@ export function PostPanel(props: PostPanelProps) {
 			emptyStateMessage={t("topic.noPosts", "No posts in this topic yet")}
 			hasMore={hasMore}
 			disablePull2Refresh={props.disablePull2Refresh}
+			extraFlashListProps={{ onScroll: onPostListScroll, onViewableItemsChanged: onPostListViewableItemsChanged }}
 		/>
 	);
 }

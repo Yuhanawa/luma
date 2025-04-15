@@ -1,4 +1,4 @@
-import { FlashList } from "@shopify/flash-list";
+import { FlashList, type FlashListProps } from "@shopify/flash-list";
 import { useColorScheme } from "nativewind";
 import { type ComponentType, type JSXElementConstructor, type ReactElement, useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -24,6 +24,7 @@ type PostListProps = {
 	emptyStateMessage?: string;
 	disablePull2Refresh?: boolean;
 	hasMore?: boolean | (() => boolean);
+	extraFlashListProps?: Omit<FlashListProps<GetTopic200PostStreamPostsItem>, "ref" | "data" | "renderItem" | "ListHeaderComponent">;
 };
 
 export const PostList = ({
@@ -40,6 +41,7 @@ export const PostList = ({
 	emptyStateMessage = "No posts to display",
 	disablePull2Refresh,
 	hasMore,
+	extraFlashListProps,
 }: PostListProps) => {
 	const { t } = useTranslation();
 	const { colorScheme } = useColorScheme();
@@ -152,6 +154,7 @@ export const PostList = ({
 					onMomentumScrollBegin={() => {
 						onEndReachedCalledDuringMomentum.current = false;
 					}}
+					{...extraFlashListProps}
 				/>
 			</Animated.View>
 		</View>

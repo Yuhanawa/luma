@@ -1,12 +1,15 @@
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import type { AxiosRequestConfig } from "axios";
 import Constants from "expo-constants";
 import { Alert, Platform } from "react-native";
+import { Dimensions } from "react-native";
 import { CookieJar, type SerializedCookieJar } from "tough-cookie";
 import type { AuthState } from "~/store/authStore";
 import DiscourseAPI from "./api";
 import type DiscourseAPIGenerated from "./api/generated";
 import CookieManager from "./cookieManager";
 import type { ListLatestTopics200 } from "./gen/api/discourseAPI/schemas";
+import ScreenTrack from "./screenTrack";
 
 export default class LinuxDoClient extends DiscourseAPI {
 	static async create({ cookieManager, authState }: { cookieManager?: CookieManager; authState?: AuthState }): Promise<LinuxDoClient> {
@@ -339,5 +342,129 @@ export default class LinuxDoClient extends DiscourseAPI {
 			},
 		});
 		return response.data;
+	}
+
+	// https://github.com/discourse/discourse-fingerprint/blob/main/assets/javascripts/initializers/fingerprint.js
+	async pluginFingerprint() {
+		console.log("pluginFingerprint");
+		const { width: screenWidth, height: screenHeight } = Dimensions.get("screen");
+		const { width: availWidth, height: availHeight } = Dimensions.get("window");
+		globalThis.screen ??= {
+			availWidth,
+			availHeight,
+			width: screenWidth,
+			height: screenHeight,
+			colorDepth: 24,
+			orientation: {
+				angle: 0,
+				onchange: () => {},
+				type: "portrait-primary",
+				unlock: () => {},
+				addEventListener: () => {},
+				removeEventListener: () => {},
+				dispatchEvent: (e) => false,
+			},
+			pixelDepth: 24,
+		};
+		FingerprintJS.load()
+			.then((fp) => fp.get())
+			.then((result) => {
+				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+				const resultMap = {} as any;
+				result.components.audio.value = 35;
+				result.components.languages.value = [["en", "en-US"]];
+				result.components.sessionStorage.value = true;
+				result.components.localStorage.value = true;
+				result.components.indexedDB.value = true;
+				result.components.openDatabase.value = true;
+				result.components.touchSupport.value = {
+					maxTouchPoints: 2,
+					touchEvent: true,
+					touchStart: true,
+				};
+				// biome-ignore lint/complexity/noForEach: <explanation>
+				// biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+				Object.keys(result.components).forEach(
+					// biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+					(key) => (resultMap[key] = result.components[key as keyof typeof result.components].value),
+				);
+
+				this.axiosInstance.post("/fingerprint", {
+					visitor_id: result.visitorId,
+					version: result.version,
+					data: JSON.stringify(resultMap),
+				});
+			});
+	}
+
+	// https://linux.do/chat/api/me/channels
+	// https://github.com/discourse/discourse-chat-integration
+	async pluginChatGetChannels(config?: AxiosRequestConfig): Promise<{
+		public_channels: unknown[];
+		direct_message_channels: unknown[];
+		tracking: { channel_tracking: unknown; thread_tracking: unknown };
+		meta: {
+			message_bus_last_ids?:
+				| {
+						channel_metadata: number;
+						channel_edits: number;
+						channel_status: number;
+						new_channel: number;
+						archive_status: number;
+						user_tracking_state: number;
+				  }
+				// biome-ignore lint/complexity/noBannedTypes: <explanation>
+				| {};
+		};
+		// biome-ignore lint/complexity/noBannedTypes: <explanation>
+		unread_thread_overview: unknown | {};
+		global_presence_channel_state:
+			| {
+					count: number;
+					last_message_id: number;
+					users: {
+						id: number;
+						username: string;
+						name?: string;
+						avatar_template: string;
+						animated_avatar?: string | null;
+					}[];
+			  }
+			// biome-ignore lint/complexity/noBannedTypes: <explanation>
+			| {};
+	}> {
+		const response = await this.axiosInstance.get("/chat/api/me/channels", config);
+		return response.data;
+	}
+
+	async topicsTimings(
+		data: {
+			timings: Record<number, number>;
+			topic_time: number;
+			topic_id: number;
+		},
+		config?: AxiosRequestConfig,
+	): Promise<unknown> {
+		console.log("topicsTimings", data);
+		// return {};
+		const response = await this.axiosInstance.post("/topics/timings", data, {
+			...config,
+			headers: {
+				"Content-Type": "application/json",
+				Accept: "application/json",
+				"X-SILENCE-LOGGER": "true",
+				"Discourse-Background": "true",
+				...config?.headers,
+			},
+		});
+		console.log("topicsTimings", response.data);
+		return response.data;
+	}
+
+	getScreenTrack(onReadPost: (topicId: number, postNumbers: number[]) => void) {
+		return new ScreenTrack({
+			topicsTimings: this.topicsTimings.bind(this),
+			readPosts: onReadPost,
+		});
 	}
 }
