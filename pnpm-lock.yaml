@@ -14,6 +14,9 @@ importers:
       '@expo/vector-icons':
         specifier: ^14.0.2
         version: 14.0.4
+      '@fingerprintjs/fingerprintjs':
+        specifier: 3.1.2
+        version: 3.1.2
       '@react-native-async-storage/async-storage':
         specifier: 1.23.1
         version: 1.23.1(react-native@0.76.9(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.20)(react@18.3.1))
@@ -1388,6 +1391,9 @@ packages:
   '@expo/xcpretty@4.3.2':
     resolution: {integrity: sha512-ReZxZ8pdnoI3tP/dNnJdnmAk7uLT4FjsKDGW7YeDdvdOMz2XCQSmSCM9IWlrXuWtMF9zeSB6WJtEhCQ41gQOfw==}
     hasBin: true
+
+  '@fingerprintjs/fingerprintjs@3.1.2':
+    resolution: {integrity: sha512-voyRD+FrqLWJksQyB94OELKYNkL67MC5Wx7g9VHfhPDIC+SMgI84L2c4rynO/eSHqV2LVfPKqpR+T0oRE/+7ow==}
 
   '@floating-ui/core@1.6.9':
     resolution: {integrity: sha512-uMXCuQ3BItDUbAMhIXw7UPXRfAlOAvZzdK9BWpE60MCn+Svt3aLn9jsPTi/WNGlRUu2uI0v5S7JiIUsbsvh3fw==}
@@ -8584,6 +8590,10 @@ snapshots:
       chalk: 4.1.2
       find-up: 5.0.0
       js-yaml: 4.1.0
+
+  '@fingerprintjs/fingerprintjs@3.1.2':
+    dependencies:
+      tslib: 2.8.1
 
   '@floating-ui/core@1.6.9':
     dependencies:
